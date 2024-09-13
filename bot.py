@@ -191,6 +191,11 @@ class bot(bare.bot):
                     if origin != "null":
                         self.msg(f"I'm banned from {chan}.", origin)
                     break
+                elif code == 475:
+                    self.log(f"Joining {chan} failed (+k without/with bad key)")
+                    if origin != "null":
+                        self.msg(f"{chan} is +k, and either you didn't give me a key, or you gave me the wrong one.", origin)
+                    break
                 elif code == 480:
                     self.log(f"Joining {chan} failed (+S)", "WARN")
                     if origin != "null":

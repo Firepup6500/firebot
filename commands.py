@@ -325,6 +325,48 @@ def slap(bot: bare.bot, chan: str, name: str, message: str) -> None:
         msg = name
     bot.msg(f"\x01ACTION slaps {msg} around a bit with {r.choice(['a firewall', 'a fireball', 'a large trout', 'a computer', 'an rpi4', 'an rpi5', 'firepi', name])}\x01", chan)
 
+def morning(bot: bare.bot, chan: str, name: str, message: str) -> None:
+    msg = message.split(" ")
+    addresse = " ".join(msg[2:]).strip().lower()
+    postfix = ""
+    if addresse and addresse[-1] in ["!", ".", "?"]:
+        postfix = addresse[-1]
+        addresse = addresse[:-1]
+    elif message[-1] in ["!", ".", "?"]:
+        postfix = addresse[-1]
+        addresse = addresse[:-1]
+    if addresse not in ["everyone", "people", bot.nick.lower(), ""]:
+        return
+    bot.msg(f"Good morning {name}{postfix}", chan)
+
+def night(bot: bare.bot, chan: str, name: str, message: str) -> None:
+    msg = message.split(" ")
+    addresse = " ".join(msg[2:]).strip().lower()
+    postfix = ""
+    if addresse and addresse[-1] in ["!", ".", "?"]:
+        postfix = addresse[-1]
+        addresse = addresse[:-1]
+    elif message[-1] in ["!", ".", "?"]:
+        postfix = addresse[-1]
+        addresse = addresse[:-1]
+    if addresse not in ["everyone", "people", bot.nick.lower(), ""]:
+        return
+    bot.msg(f"Good night {name}{postfix}", chan)
+
+def afternoon(bot: bare.bot, chan: str, name: str, message: str) -> None:
+    msg = message.split(" ")
+    addresse = " ".join(msg[2:]).strip().lower()
+    postfix = ""
+    if addresse and addresse[-1] in ["!", ".", "?"]:
+        postfix = addresse[-1]
+        addresse = addresse[:-1]
+    elif message[-1] in ["!", ".", "?"]:
+        postfix = addresse[-1]
+        addresse = addresse[:-1]
+    if addresse not in ["everyone", "people", bot.nick.lower(), ""]:
+        return
+    bot.msg(f"Good afternoon {name}{postfix}", chan)
+
 
 data: dict[str, dict[str, Any]] = {
     "!botlist": {"prefix": False, "aliases": []},
@@ -336,7 +378,7 @@ data: dict[str, dict[str, Any]] = {
         "aliases": ["reboot", "stop", "hardreload", "hr"],
         "check": checks.admin,
     },
-    "uptime": {"prefix": True, "aliases": []},
+    "uptime": {"prefix": True, "aliases": ["u"]},
     "raw": {"prefix": True, "aliases": ["cmd "], "check": checks.admin},
     "debug": {"prefix": True, "aliases": ["dbg", "d"], "check": checks.admin},
     "debugInternal": {
@@ -366,7 +408,10 @@ data: dict[str, dict[str, Any]] = {
     "setStatus": {"prefix": True, "aliases": ["sS"], "check": checks.admin},
     "getStatus": {"prefix": True, "aliases": ["gS"]},
     "check": {"prefix": True, "aliases": [], "check": checks.admin},
-    "slap": {"prefix": True, "aliases": ["s"]}
+    "slap": {"prefix": True, "aliases": ["s"]},
+    "good morning": {"prefix": False, "aliases": []},
+    "good night": {"prefix": False, "aliases": []},
+    "good afternoon": {"prefix": False, "aliases": []},
 }
 regexes: list[str] = [conf.npbase, conf.su]
 call: dict[str, Callable[[bare.bot, str, str, str], None]] = {
@@ -399,4 +444,7 @@ call: dict[str, Callable[[bare.bot, str, str, str], None]] = {
     "getStatus": getStatus,
     "check": check,
     "slap": slap,
+    "good morning": morning,
+    "good night": night,
+    "good afternoon": afternoon,
 }

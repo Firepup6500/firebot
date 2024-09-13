@@ -15,7 +15,7 @@ def CTCP(bot: bare.bot, msg: str) -> bool:
     bot.log(f'Responding to CTCP "{kind}" from {sender}')
     if kind == "VERSION":
         bot.notice(
-            f"\x01VERSION FireBot {conf.__version__} (https://git.amcforum.wiki/Firepup650/fire-ircbot)\x01",
+            f"\x01VERSION FireBot {conf.__version__} (https://git.h.hackclub.app/Firepup650/FireBot)\x01",
             sender,
             True,
         )
@@ -25,7 +25,7 @@ def CTCP(bot: bare.bot, msg: str) -> bool:
         return True
     elif kind == "SOURCE":
         bot.notice(
-            "\x01SOURCE https://git.amcforum.wiki/Firepup650/fire-ircbot\x01",
+            "\x01SOURCE https://git.h.hackclub.app/Firepup650/FireBot\x01",
             sender,
             True,
         )
