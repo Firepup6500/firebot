@@ -67,27 +67,29 @@ def isAdmin(bot: bare.bot, chan: str, name: str, message: str) -> None:
 
 def help(bot: bare.bot, chan: str, name: str, message: str) -> None:
     helpErr = False
+    category = None
+    if len(message.split(" ")) > 1:
+        category = message.split(" ")[1]
     if bot.current == "bridge":
         helpErr = True
     if not helpErr:
-        bot.msg("Command list needs rework", name)
+        bot.msg("Command list needs rework", chan)
         return
-        bot.msg("List of commands:", name)
-        bot.msg(f'Current bot.prefix is "{bot.prefix}"', name)
-        bot.msg(f"{bot.prefix}help - Sends this help list", name)
-        bot.msg(f"{bot.prefix}quote - Sends a random firepup quote", name)
-        bot.msg(
-            f"{bot.prefix}(eightball,8ball,8b) [question]? - Asks the magic eightball a question",
-            name,
-        )
-        bot.msg(f"(hi,hello) {bot.nick} - The bot says hi to you", name)
-        if checks.admin(bot, name):
-            bot.msg(f"reboot {bot.rebt} - Restarts the bot", name)
-            bot.msg("op me - Makes the bot try to op you", name)
-            bot.msg(
-                f"{bot.prefix}join [channel(s)] - Joins the bot to the specified channel(s)",
-                name,
-            )
+        match category:
+            case None:
+                bot.msg("Categories of commands: gen, dbg, adm, fun, msc", chan)
+            case "gen":
+                bot.msg("Commands in the General category: ", chan)
+            case "dbg":
+                bot.msg("Commands in the [DEBUG] category: ", chan)
+            case "adm":
+                bot.msg("Commands in the Admin category: ", chan)
+            case "fun":
+                bot.msg("Commands in the Fun category: ", chan)
+            case "msc":
+                bot.msg("Commands in the Misc. category: ", chan)
+            case _:
+                bot.msg("Unknown commands category.", chan)
     else:
         bot.msg("Sorry, I can't send help to bridged users.", chan)
 
@@ -323,7 +325,11 @@ def slap(bot: bare.bot, chan: str, name: str, message: str) -> None:
             msg = name
     else:
         msg = name
-    bot.msg(f"\x01ACTION slaps {msg} around a bit with {r.choice(['a firewall', 'a fireball', 'a large trout', 'a computer', 'an rpi4', 'an rpi5', 'firepi', name])}\x01", chan)
+    bot.msg(
+        f"\x01ACTION slaps {msg} around a bit with {r.choice(['a firewall', 'a fireball', 'a large trout', 'a computer', 'an rpi4', 'an rpi5', 'firepi', name])}\x01",
+        chan,
+    )
+
 
 def morning(bot: bare.bot, chan: str, name: str, message: str) -> None:
     msg = message.split(" ")
@@ -339,6 +345,7 @@ def morning(bot: bare.bot, chan: str, name: str, message: str) -> None:
         return
     bot.msg(f"Good morning {name}{postfix}", chan)
 
+
 def night(bot: bare.bot, chan: str, name: str, message: str) -> None:
     msg = message.split(" ")
     addresse = " ".join(msg[2:]).strip().lower()
@@ -352,6 +359,7 @@ def night(bot: bare.bot, chan: str, name: str, message: str) -> None:
     if addresse not in ["everyone", "people", bot.nick.lower(), ""]:
         return
     bot.msg(f"Good night {name}{postfix}", chan)
+
 
 def afternoon(bot: bare.bot, chan: str, name: str, message: str) -> None:
     msg = message.split(" ")
@@ -396,7 +404,7 @@ data: dict[str, dict[str, Any]] = {
         "aliases": ["g.m.d"],
         "check": checks.admin,
     },
-    "help": {"prefix": True, "aliases": ["?"]},
+    "help": {"prefix": True, "aliases": ["?", "list", "h"]},
     "amiadmin": {"prefix": True, "aliases": []},
     "ping": {"prefix": True, "aliases": []},
     "op me": {"prefix": False, "aliases": [], "check": checks.admin},
@@ -409,9 +417,12 @@ data: dict[str, dict[str, Any]] = {
     "getStatus": {"prefix": True, "aliases": ["gS"]},
     "check": {"prefix": True, "aliases": [], "check": checks.admin},
     "slap": {"prefix": True, "aliases": ["s"]},
-    "good morning": {"prefix": False, "aliases": []},
-    "good night": {"prefix": False, "aliases": []},
-    "good afternoon": {"prefix": False, "aliases": []},
+    "good morning": {
+        "prefix": False,
+        "aliases": ["g'morning", "morning", "mornin'", "good mornin'"],
+    },
+    "good night": {"prefix": False, "aliases": ["g'night", "night"]},
+    "good afternoon": {"prefix": False, "aliases": ["g'afternoon", "afternoon"]},
 }
 regexes: list[str] = [conf.npbase, conf.su]
 call: dict[str, Callable[[bare.bot, str, str, str], None]] = {
