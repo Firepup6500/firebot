@@ -112,7 +112,7 @@ def CTCPHandler(msg: str, sender: str = "", isRaw: bool = False):
     log(f"Responding to CTCP {CTCP} from {sender}", server)
     if CTCP == "VERSION":
         notice(
-            f"\x01VERSION FireBot {__version__} (https://git.amcforum.wiki/Firepup650/fire-ircbot)\x01",
+            f"\x01VERSION FireBot {__version__} (https://git.h.hackclub.app/Firepup650/FireBot)\x01",
             sender,
             True,
         )
@@ -122,7 +122,7 @@ def CTCPHandler(msg: str, sender: str = "", isRaw: bool = False):
         return True
     elif CTCP == "SOURCE":
         notice(
-            "\x01SOURCE https://git.amcforum.wiki/Firepup650/fire-ircbot\x01",
+            "\x01SOURCE https://git.h.hackclub.app/Firepup650/FireBot\x01",
             sender,
             True,
         )
@@ -304,7 +304,7 @@ def main():
                         False,
                     ):
                         sendmsg(
-                            f"Hi! I'm FireBot (https://git.amcforum.wiki/Firepup650/fire-ircbot)! My admins on this server are {adminnames}.",
+                            f"Hi! I'm FireBot (https://git.h.hackclub.app/Firepup650/FireBot)! My admins on this server are {adminnames}.",
                             chan,
                         )
                     if mfind(
