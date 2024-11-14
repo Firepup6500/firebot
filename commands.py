@@ -185,11 +185,11 @@ def reboot(bot: bare.bot, chan: str, name: str, message: str) -> None:
 
 def sudo(bot: bare.bot, chan: str, name: str, message: str) -> None:
     if checks.admin(bot, name):
-        bot.msg("Error - system failure, contact system operator", chan)
+        bot.msg("Operation not permitted", chan)
     elif "bot" in name.lower():
         bot.log("lol, no.")
     else:
-        bot.msg("Access Denied", chan)
+        bot.msg('sudo: a password is required', chan)
 
 
 def nowplaying(bot: bare.bot, chan: str, name: str, message: str) -> None:
