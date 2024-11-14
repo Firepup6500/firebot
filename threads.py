@@ -148,7 +148,12 @@ def radio(instance: bare.bot) -> NoReturn:
     instance.log("Thread while loop broken", "FATAL")
     exit(1)
 
+def ping(instance: bare.bot) -> NoReturn:
+    while 1:
+        instance.sendraw("PING :keepalive")
+        sleep(30)
 
 data: dict[str, dict[str, Any]] = {
-    "radio": {"noWrap": True, "func": radio, "passInstance": True}
+    "radio": {"noWrap": True, "func": radio, "passInstance": True},
+    "pingMon": {"noWrap": True, "func": ping, "passInstance": True}
 }

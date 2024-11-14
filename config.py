@@ -52,6 +52,7 @@ servers: dict[str, dict[str, Any]] = {
         "address": "irc.underworld.no",
         "channels": {"#random": 0, "#dice": 0},
         "hosts": ["154.sub-174-251-241.myvzw.com"],
+        "threads": ["pingMon"],
         "dnsblMode": "kickban",
     },
     "replirc": {
