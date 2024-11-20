@@ -31,6 +31,8 @@ providers = BL.BASE_PROVIDERS + [droneBL("dnsbl.dronebl.org")]
 ipbl = DNSBLIpChecker(providers=providers)
 hsbl = DNSBLDomainChecker(providers=providers)
 
+hardbl = ["146.70.59.36"]
+
 load_dotenv()
 __version__ = "v3.0.22"
 npbase: str = (
@@ -180,6 +182,8 @@ def dnsbl(hostname: str) -> tuple[str, dict[str, list[str]]]:
             hstDT = hsbl.check(hostname).detected_by
         except ValueError:  # It's also not a hostname
             hstDT = {}
+    if hostname in hardbl:
+        hstDT["hardcoded"] = ["Known bad host"]
     for host in hstDT:
         if hstDT[host] != ["unknown"]:
             hosts.append(host)
@@ -209,9 +213,9 @@ def dnsblHandler(
             match bot.dnsblMode:
                 case "kickban":
                     bot.sendraw(
-                        f"KICK #{chan} {nick} :Sorry, but you're on the {dnsblStatus} blacklist(s)."
+                        f"KICK {chan} {nick} :Sorry, but you're on the {dnsblStatus} blacklist(s)."
                     )
-                    bot.sendraw(f"MODE #{chan} +b *!*@{hostname}")
+                    bot.sendraw(f"MODE {chan} +b *!*@{hostname}")
                 case "akill":
                     bot.sendraw(
                         f"OS AKILL ADD *@{hostname} !P Sorry, but you're on the {dnsblStatus} blacklist(s)."
