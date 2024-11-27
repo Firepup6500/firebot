@@ -189,7 +189,7 @@ def sudo(bot: bare.bot, chan: str, name: str, message: str) -> None:
     elif "bot" in name.lower():
         bot.log("lol, no.")
     else:
-        bot.msg('sudo: a password is required', chan)
+        bot.msg("sudo: a password is required", chan)
 
 
 def nowplaying(bot: bare.bot, chan: str, name: str, message: str) -> None:
