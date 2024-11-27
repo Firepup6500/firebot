@@ -104,7 +104,7 @@ servers: dict[str, dict[str, Any]] = {
         "prefix": "!",
     },
 }
-admin_hosts: list[str] = ["firepup.firepi", "47.221.98.52"]
+admin_hosts: list[str] = ["firepup.firepi", "69.8.95.218"]
 ESCAPE_SEQUENCE_RE = re.compile(
     r"""
     ( \\U........      # 8-digit hex escapes
