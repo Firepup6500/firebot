@@ -105,6 +105,7 @@ servers: dict[str, dict[str, Any]] = {
     },
 }
 admin_hosts: list[str] = ["firepup.firepi", "69.8.95.218"]
+noAdmins = ["ircnow", "backupbox"]
 ESCAPE_SEQUENCE_RE = re.compile(
     r"""
     ( \\U........      # 8-digit hex escapes
