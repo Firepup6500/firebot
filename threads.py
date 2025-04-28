@@ -5,7 +5,7 @@ from typing import Any, NoReturn
 from threading import Thread
 from time import sleep
 from traceback import format_exc
-import  bare
+import bare
 from logs import log
 
 

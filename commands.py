@@ -208,7 +208,8 @@ def fmpull(bot: bare.bot, chan: str, name: str, message: str) -> None:
         song = bot.lastfmLink.get_user("Firepup650").get_now_playing()
     except Exception as E:  # TODO: Proper catch
         bot.msg(
-            "Sorry, the last.fm api isn't cooperating, please try again in a minute", chan
+            "Sorry, the last.fm api isn't cooperating, please try again in a minute",
+            chan,
         )
         bot.log(str(E), "FATAL")
     if song:
