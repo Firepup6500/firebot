@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# pylint: skip-file
 from time import sleep
 from overrides import bytes, bbytes
 import re, random as r, codecs

@@ -1,9 +1,9 @@
 #!/usr/bin/python3
+# pylint: disable=missing-module-docstring,missing-function-docstring,unused-argument
 from subprocess import run, PIPE
-import config as conf
 import random as r
 from typing import Any, Callable
-import bare, re, checks
+import re, checks, bare, config as conf
 
 
 def fpmp(bot: bare.bot, chan: str, name: str, message: str) -> None:
@@ -51,7 +51,7 @@ def ping(bot: bare.bot, chan: str, name: str, message: str) -> None:
 
 
 def uptime(bot: bare.bot, chan: str, name: str, message: str) -> None:
-    uptime = run(["uptime", "-p"], stdout=PIPE).stdout.decode().strip()
+    uptime = run(["uptime", "-p"], stdout=PIPE, check=False).stdout.decode().strip()
     bot.msg(
         f"Uptime: {uptime}",
         chan,
@@ -66,6 +66,7 @@ def isAdmin(bot: bare.bot, chan: str, name: str, message: str) -> None:
 
 
 def help(bot: bare.bot, chan: str, name: str, message: str) -> None:
+    # pylint: disable=redefined-builtin,unreachable
     helpErr = False
     category = None
     if len(message.split(" ")) > 1:
@@ -90,8 +91,7 @@ def help(bot: bare.bot, chan: str, name: str, message: str) -> None:
                 bot.msg("Commands in the Misc. category: ", chan)
             case _:
                 bot.msg("Unknown commands category.", chan)
-    else:
-        bot.msg("Sorry, I can't send help to bridged users.", chan)
+    bot.msg("Sorry, I can't send help to bridged users.", chan)
 
 
 def goatOn(bot: bare.bot, chan: str, name: str, message: str) -> None:
@@ -110,16 +110,16 @@ def quote(bot: bare.bot, chan: str, name: str, message: str) -> None:
     if " " in message:
         query = message.split(" ", 1)[1]
         qfilter = query.replace(
-            " ", "\s"
+            " ", r"\s"
         )  # pyright: ignore [reportInvalidStringEscapeSequence]
     r.seed()
-    with open("mastermessages.txt", "r") as mm:
+    with open("mastermessages.txt", "r", encoding="utf-8") as mm:
         q = []
         try:
             q = list(filter(lambda x: re.search(qfilter, x), mm.readlines()))
         except re.error:
             q = ["Sorry, your query is invalid regex. Please try again."]
-        if q == []:
+        if not q:
             q = [f'No results for "{query}" ']
         sel = conf.decode_escapes(
             r.sample(q, 1)[0].replace("\\n", "").replace("\n", "")
@@ -134,11 +134,10 @@ def join(bot: bare.bot, chan: str, name: str, message: str) -> None:
 
 def eball(bot: bare.bot, chan: str, name: str, message: str) -> None:
     if message.endswith("?"):
-        eb = open("eightball.txt", "r")
-        q = eb.readlines()
-        sel = str(r.sample(q, 1)).strip("[]'").replace("\\n", "").strip('"')
-        bot.msg(f"The magic eightball says: {sel}", chan)
-        eb.close()
+        with open("eightball.txt", "r", encoding="utf-8") as eb:
+            q = eb.readlines()
+            sel = str(r.sample(q, 1)).strip("[]'").replace("\\n", "").strip('"')
+            bot.msg(f"The magic eightball says: {sel}", chan)
     else:
         bot.msg("Please pose a Yes or No question.", chan)
 
@@ -168,6 +167,7 @@ def debugInternal(bot: bare.bot, chan: str, name: str, message: str) -> None:
 
 
 def debugEval(bot: bare.bot, chan: str, name: str, message: str) -> None:
+    # pylint: disable=broad-exception-caught,eval-used
     try:
         bot.msg(str(eval(message.split(" ", 1)[1])), chan)
     except Exception as E:
@@ -202,16 +202,18 @@ def nowplaying(bot: bare.bot, chan: str, name: str, message: str) -> None:
 
 
 def fmpull(bot: bare.bot, chan: str, name: str, message: str) -> None:
+    # pylint: disable=broad-exception-caught,fixme
     song = None
     try:
         song = bot.lastfmLink.get_user("Firepup650").get_now_playing()
-    except:
+    except Exception as E:  # TODO: Proper catch
         bot.msg(
-            "Sorry, the music api isn't cooperating, please try again in a minute", chan
+            "Sorry, the last.fm api isn't cooperating, please try again in a minute", chan
         )
+        bot.log(str(E), "FATAL")
     if song:
         bot.msg(
-            "Firepup is currently listening to: " + song.__str__(),
+            "Firepup is currently listening to: " + str(song),
             chan,
         )
     else:
@@ -288,6 +290,7 @@ def getStatus(bot: bare.bot, chan: str, name: str, message: str) -> None:
 
 
 def check(bot: bare.bot, chan: str, name: str, message: str) -> None:
+    # pylint: disable=broad-exception-caught
     try:
         msg = message.split(" ", 1)[1]
         nick = msg.split("!")[0]

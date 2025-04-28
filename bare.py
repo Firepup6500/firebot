@@ -1,8 +1,9 @@
 #!/usr/bin/python3
+# pylint: disable=unused-argument,missing-module-docstring,missing-function-docstring,missing-class-docstring,redefined-builtin
 from socket import socket
-from overrides import bytes, bbytes
 from typing import NoReturn, Union
 from pylast import LastFMNetwork
+from overrides import bytes, bbytes
 from markov import MarkovBot
 
 logs = ...

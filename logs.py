@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# pylint: disable=missing-module-docstring,missing-function-docstring
 from datetime import datetime as dt
 from sys import stdout, stderr
 from typing import Union
@@ -16,9 +17,9 @@ def log(
         stream = stdout
     if time == "now":
         dtime = dt.now()
-    elif type(time) == str:
+    elif isinstance(time, str):
         raise ValueError('Only "now" is an accepted string argument for time')
-    elif type(time) == dt:
+    elif isinstance(time, dt):
         dtime = time
     else:
         raise ValueError("time must either be a string or a dt object")

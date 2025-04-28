@@ -1,12 +1,11 @@
 #!/usr/bin/python3
+# pylint: disable=missing-module-docstring,missing-function-docstring,unused-argument,redefined-builtin
 import random as r
-import config as conf
-import commands as cmds
 from typing import Union, Callable
-from overrides import bytes, bbytes
-from importlib import reload
-import bare, re, checks
 from traceback import format_exc
+import re, checks, bare
+from overrides import bytes
+import config as conf, commands as cmds
 
 
 def CTCP(bot: bare.bot, msg: str) -> bool:
@@ -20,20 +19,20 @@ def CTCP(bot: bare.bot, msg: str) -> bool:
             True,
         )
         return True
-    elif kind == "USERINFO":
+    if kind == "USERINFO":
         bot.notice("\x01USERINFO FireBot (Firepup's bot)\x01", sender, True)
         return True
-    elif kind == "SOURCE":
+    if kind == "SOURCE":
         bot.notice(
             "\x01SOURCE https://git.h.hackclub.app/Firepup650/FireBot\x01",
             sender,
             True,
         )
         return True
-    elif kind == "FINGER":
+    if kind == "FINGER":
         bot.notice("\x01FINGER Firepup's bot\x01", sender, True)
         return True
-    elif kind == "CLIENTINFO":
+    if kind == "CLIENTINFO":
         bot.notice(
             "\x01CLIENTINFO ACTION VERSION USERINFO SOURCE FINGER\x01", sender, True
         )
@@ -43,6 +42,7 @@ def CTCP(bot: bare.bot, msg: str) -> bool:
 
 
 def PRIVMSG(bot: bare.bot, msg: str) -> Union[tuple[None, None], tuple[str, str]]:
+    # pylint: disable=too-many-locals,too-many-boolean-expressions
     # Format of ":[Nick]![ident]@[host|vhost] PRIVMSG [channel] :[message]”
     name = msg.split("!", 1)[0][1:]
     host = msg.split("@", 1)[1].split(" ", 1)[0]
@@ -85,8 +85,7 @@ def PRIVMSG(bot: bare.bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
         bot.log(f"Name too long ({len(name)} > {bot.nicklen})")
         if not bridge:
             return None, None
-        else:
-            bot.log("This user is a bridge, overriding")
+        bot.log("This user is a bridge, overriding")
     elif chan not in bot.channels:
         if not chan == bot.nick:
             bot.log(
@@ -97,20 +96,21 @@ def PRIVMSG(bot: bare.bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
             chan = name
     else:
         bot.channels[chan] += 1
-    if "goat" in name.lower() and bot.gmode == True:
+    if "goat" in name.lower() and bot.gmode:
         cmds.goat(bot, chan, name, message)
     handled = False
-    for cmd in cmds.data:
+    for cmd, data in cmds.data.items():
         triggers = [cmd]
-        triggers.extend(cmds.data[cmd]["aliases"])
+        triggers.extend(data["aliases"])
         triggers = list(conf.sub(call, bot, chan, name).lower() for call in triggers)
         if conf.cmdFind(
             conf.sub(message, bot, chan, name).lower(),
             triggers,
-            cmds.data[cmd]["prefix"],
+            data["prefix"],
         ):
-            if "check" in cmds.data[cmd] and cmds.data[cmd]["check"]:
-                if cmds.data[cmd]["check"](bot, name, host, chan, cmd):
+            # pylint: disable=broad-exception-caught
+            if "check" in data and data["check"]:
+                if data["check"](bot, name, host, chan, cmd):
                     try:
                         cmds.call[cmd](bot, chan, name, message)
                     except Exception:
@@ -162,7 +162,7 @@ def PRIVMSG(bot: bare.bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
         bot.channels[chan] = 0
         if bot.autoMethod == "QUOTE":
             r.seed()
-            with open("mastermessages.txt", "r") as mm:
+            with open("mastermessages.txt", "r", encoding="utf-8") as mm:
                 sel = conf.decode_escapes(
                     r.sample(mm.readlines(), 1)[0].replace("\\n", "").replace("\n", "")
                 )
@@ -215,9 +215,9 @@ def JOIN(bot: bare.bot, msg: str) -> tuple[None, None]:
 def MODE(bot: bare.bot, msg: str) -> tuple[None, None]:
     try:
         chan = msg.split("#", 1)[1].split(" ", 1)[0]
-        add = True if msg.split("#", 1)[1].split(" ", 2)[1][0] == "+" else False
+        add = msg.split("#", 1)[1].split(" ", 2)[1][0] == "+"
         modes = msg.split("#", 1)[1].split(" ", 2)[1][1:]
-        users = ""
+        users = []
         try:
             users = msg.split("#", 1)[1].split(" ", 2)[2].split()
         except IndexError:
@@ -225,9 +225,9 @@ def MODE(bot: bare.bot, msg: str) -> tuple[None, None]:
         if len(modes) != len(users):
             bot.log("Refusing to handle modes that do not have corresponding users.")
             return None, None
-        for i in range(len(modes)):
+        for i, mode in enumerate(modes):
             if users[i] == bot.nick:
-                if modes[i] == "o":
+                if mode == "o":
                     bot.ops[chan] = add
                     bot.log(f"{'Got' if add else 'Lost'} ops in {chan}")
     except IndexError:  # *our* modes are changing, not a channel

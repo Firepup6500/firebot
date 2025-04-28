@@ -1,10 +1,11 @@
 #!/usr/bin/python3
+# pylint: disable=missing-module-docstring,missing-function-docstring,missing-class-docstring,too-few-public-methods
 from os import environ as env
-from dotenv import load_dotenv  # type: ignore
 import re, codecs
-from typing import Optional, Any, Union
-import bare, pylast
+from typing import Optional, Any
+from dotenv import load_dotenv  # type: ignore
 from pydnsbl import DNSBLIpChecker, DNSBLDomainChecker, providers as BL
+import pylast, bare
 
 
 class droneBL(BL.Provider):
@@ -31,12 +32,12 @@ providers = BL.BASE_PROVIDERS + [droneBL("dnsbl.dronebl.org")]
 ipbl = DNSBLIpChecker(providers=providers)
 hsbl = DNSBLDomainChecker(providers=providers)
 
-hardbl = ["146.70.59.36"]
+hardbl: list[str] = ["146.70.59.36"]
 
 load_dotenv()
 __version__ = "v3.0.22"
 npbase: str = (
-    "\[\x0303last\.fm\x03\] [A-Za-z0-9_[\]{}\\|\-^]{1,$MAX} (is listening|last listened) to: \x02.+ - .*\x02( \([0-9]+ plays\)( \[.*\])?)?"  # pyright: ignore [reportInvalidStringEscapeSequence]
+    "\\[\x0303last\\.fm\x03\\] [A-Za-z0-9_[\\]{}\\|\\-^]{1,$MAX} (is listening|last listened) to: \x02.+ - .*\x02( \\([0-9]+ plays\\)( \\[.*\\])?)?"
 )
 su = "^(su|sudo|(su .*|sudo .*))$"
 servers: dict[str, dict[str, Any]] = {
@@ -155,8 +156,7 @@ def cmdFind(message: str, find: list, usePrefix: bool = True) -> bool:
 def mfind(message: str, find: list, usePrefix: bool = True) -> bool:
     if usePrefix:
         return any(message[: len(match) + 1] == prefix + match for match in find)
-    else:
-        return any(message[: len(match)] == match for match in find)
+    return any(message[: len(match)] == match for match in find)
 
 
 def sub(

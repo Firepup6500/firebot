@@ -1,12 +1,12 @@
 #!/usr/bin/python3
-import bare, pylast
-import config as conf
-import random as r
-from logs import log
-from typing import Any, Callable, NoReturn
+# pylint: disable=missing-module-docstring,missing-function-docstring,redefined-builtin
+from sys import exit
+from typing import Any, NoReturn
 from threading import Thread
 from time import sleep
 from traceback import format_exc
+import  bare
+from logs import log
 
 
 def is_dead(thr: Thread) -> bool:
@@ -15,6 +15,7 @@ def is_dead(thr: Thread) -> bool:
 
 
 def threadWrapper(data: dict) -> NoReturn:
+    # pylint: disable=broad-exception-caught
     if not data["noWrap"]:
         while 1:
             if data["ignoreErrors"]:
@@ -64,8 +65,7 @@ def threadManager(
         sleep(interval)
         if output:
             log("Checking threads", mgr)
-        for name in running:
-            t = running[name]
+        for name, t in running.items():
             if is_dead(t):
                 if output:
                     log(f"Thread {name} has died, restarting", mgr, "WARN")
@@ -76,9 +76,9 @@ def threadManager(
 
 
 def radio(instance: bare.bot) -> NoReturn:
+    # pylint: disable=broad-exception-caught
     lastTrack = ""
     complained = False
-    firstMiss = False
     misses = 0
     missChunk = 0
     missCap = -5
@@ -97,7 +97,7 @@ def radio(instance: bare.bot) -> NoReturn:
                     if missChunk >= perChunk:
                         misses -= 1
                         missChunk = 0
-                thisTrack = newTrack.__str__()
+                thisTrack = str(newTrack)
                 if thisTrack != lastTrack:
                     lastTrack = thisTrack
                     instance.msg("f.sp " + thisTrack, "#fp-radio")

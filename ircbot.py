@@ -1,7 +1,8 @@
 #!/usr/bin/python3
-from bot import bot
-from sys import argv as args
+# pylint: disable=missing-module-docstring,broad-exception-caught,redefined-builtin
+from sys import argv as args, exit
 from traceback import format_exc
+from bot import bot
 from logs import log
 
 server = args[1] if args else "UNSTABLE"

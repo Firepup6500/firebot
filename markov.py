@@ -1,3 +1,4 @@
+# pylint: skip-file
 import random
 from typing import Union
 

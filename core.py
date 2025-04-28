@@ -1,8 +1,6 @@
 #!/usr/bin/python3
+# pylint: disable=missing-module-docstring,missing-function-docstring
 from os import system
-from time import sleep
-from threading import Thread
-from logs import log
 from threads import threadManager
 
 

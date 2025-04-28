@@ -1,10 +1,9 @@
 #!/usr/bin/python3
+# pylint: disable=missing-module-docstring,redefined-builtin
 from builtins import bytes as bbytes
 from typing import TypeVar, Type, Any
 
 _T = TypeVar("_T")
-
-bbytes = bbytes
 
 
 class bytes(bbytes):
@@ -29,11 +28,11 @@ class bytes(bbytes):
         encoding: str = "UTF-8",
         errors: str = "strict",
     ) -> _T:
-        if type(thing) == str:
+        if isinstance(thing, str):
             cls.value = super().__new__(cls, thing, encoding, errors)  # type: ignore
-        elif thing == None:
+        elif thing is None:
             cls.value = super().__new__(cls)  # type: ignore
-        elif thing != None:
+        elif thing is not None:
             cls.value = super().__new__(cls, thing)  # type: ignore
         else:
             raise AttributeError("This shouldn't happen")

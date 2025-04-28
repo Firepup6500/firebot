@@ -1,31 +1,32 @@
 #!/usr/bin/python3
+# pylint: disable=missing-module-docstring,missing-function-docstring,missing-class-docstring,too-many-instance-attributes,broad-exception-caught,redefined-builtin
 from socket import socket, AF_INET, SOCK_STREAM
-from overrides import bytes, bbytes
-import logs
-import re
+from sys import exit
 from typing import NoReturn, Union
-import commands as cmds
-import config as conf
 from time import sleep
 from importlib import reload
-import threads
 import random as r
+from threading import Thread
+from traceback import format_exc
+from overrides import bytes, bbytes
+import commands as cmds
+import config as conf
+import threads
+import logs
 import handlers
 import bare
-from threading import Thread
 from markov import MarkovBot
-from traceback import format_exc
 
 
 def mfind(message: str, find: list, usePrefix: bool = True) -> bool:
     if usePrefix:
         return any(message[: len(match) + 1] == conf.prefix + match for match in find)
-    else:
-        return any(message[: len(match)] == match for match in find)
+    return any(message[: len(match)] == match for match in find)
 
 
 class bot(bare.bot):
     def __init__(self, server: str):
+        bare.bot.__init__(self, server)
         self.gmode = False
         self.server = server
         self.nicklen = 30
@@ -87,7 +88,7 @@ class bot(bare.bot):
         )
         self.dns = {}
         self.lastfmLink = conf.lastfmLink
-        with open("mastermessages.txt") as f:
+        with open("mastermessages.txt", encoding="utf-8") as f:
             TMFeed = []
             for line in f.readlines():
                 TMFeed.extend([line.strip().split()])
@@ -130,7 +131,7 @@ class bot(bare.bot):
                     self.log(f"Success by code: {code}")
                     break
                 if " MODE " in ircmsg or " PRIVMSG " in ircmsg:
-                    self.log(f"Success by MSG/MODE")
+                    self.log("Success by MSG/MODE")
                     break
                 if ircmsg.startswith("PING "):
                     self.ping(ircmsg)
@@ -326,7 +327,7 @@ class bot(bare.bot):
                 self.tmpHost = ""
                 if action in handlers.handles:
                     res, chan = handlers.handles[action](self, ircmsg)
-                    if res == "reload" and type(chan) == str:
+                    if res == "reload" and isinstance(chan, str):
                         try:
                             reload(conf)
                             self.adminnames = (
