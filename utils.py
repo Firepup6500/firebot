@@ -2,14 +2,27 @@
 import codecs
 from typing import Optional
 import bare
-from config import ESCAPE_SEQUENCE_RE, prefix, ipbl, hsbl, hardbl
+from config import ESCAPE_SEQUENCE_RE, prefix, ipbl, hsbl, hardbl, IRC_ESCAPE_CODES
 
 
-def decode_escapes(s: str) -> str:
+def replace_irc(s: str) -> str:
+    for code in IRC_ESCAPE_CODES:
+        s = s.replace(chr(code), f"\\x{code:02x}")
+    return s
+
+
+def decode_escapes(s: str, replaceControls=False) -> str:
+    s = s.replace("\n", "").replace("\\n", "")
+
     def decode_match(match):
         return codecs.decode(match.group(0), "unicode-escape")
 
-    return ESCAPE_SEQUENCE_RE.sub(decode_match, s)
+    s = ESCAPE_SEQUENCE_RE.sub(decode_match, s)
+
+    if replaceControls:
+        s = replace_irc(s)
+
+    return s
 
 
 def cmdFind(message: str, find: list, usePrefix: bool = True) -> bool:

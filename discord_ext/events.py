@@ -44,17 +44,9 @@ def register_events(bot, env):
                 ephemeral=True,
             )
             return
-        error_data = "".join(
-            traceback.format_exception(type(error), error, error.__traceback__)
-        )
+        error_data = ("".join(traceback.format_exception(error))).strip()
         embed.description = f"```py\n{error_data}\n```"
-        logger.error(
-            "".join(
-                traceback.format_exception(
-                    type(full_error), full_error, full_error.__traceback__
-                )
-            )
-        )
+        logger.error("An error occured while calling a command:\n", exc_info=full_error)
         await bot.error_channel.send(
             f"{ctx.author.mention} ({ctx.author.id}) broke something :/\nGuild: {ctx.guild.name} ({ctx.guild.id})\nChannel: {ctx.channel.name} ({ctx.channel.id})\nCommand: {ctx.command}",
             embed=embed,

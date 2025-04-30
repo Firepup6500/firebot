@@ -34,7 +34,7 @@ hsbl = DNSBLDomainChecker(providers=providers)
 hardbl: list[str] = ["146.70.59.36"]
 
 load_dotenv()
-__version__ = "v3.0.23"
+__version__ = "v3.0.24"
 npbase: str = (
     "\\[\x0303last\\.fm\x03\\] [A-Za-z0-9_[\\]{}\\|\\-^]{1,$MAX} (is listening|last listened) to: \x02.+ - .*\x02( \\([0-9]+ plays\\)( \\[.*\\])?)?"
 )
@@ -117,6 +117,7 @@ ESCAPE_SEQUENCE_RE = re.compile(
     )""",
     re.UNICODE | re.VERBOSE,
 )
+IRC_ESCAPE_CODES = [0x02, 0x1F, 0x16, 0x1D, 0x1E, 0x0F, 0x03, 0x07, 0x1B, 0x11]
 prefix = "."
 lastfmLink = pylast.LastFMNetwork(env["FM_KEY"], env["FM_SECRET"])
 npallowed: list[str] = ["FireBitBot"]

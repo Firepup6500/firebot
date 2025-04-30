@@ -4,7 +4,6 @@ import random as r
 import re, logging
 from sys import exit
 from typing import Any, Callable
-import traceback
 from discord.ext.commands import Context
 from utils import decode_escapes
 from .shared import handler
@@ -97,8 +96,9 @@ async def quote_discord(ctx: Context, *, regex: str = "") -> None:
             .replace("_", "\\_")
             .replace("*", "\\*")
             .replace("||", "\\|\\|")
-            .replace("\\", "\\\\")
-        ).replace("\x03", "\\x03")
+            .replace("\\", "\\\\"),
+            True,
+        )
         await ctx.send(sel)
         if ctx.interaction and await ctx.bot.is_owner(ctx.author):
             await ctx.send(sel.encode(), ephemeral=True)
@@ -165,11 +165,11 @@ async def fmpull_discord(ctx: Context) -> None:
     song = None
     try:
         song = ctx.bot.lastfmLink.get_user("Firepup650").get_now_playing()
-    except Exception as E:  # TODO: Proper catch
+    except Exception:  # TODO: Proper catch
         await ctx.send(
             "Sorry, the last.fm api isn't cooperating, please try again in a minute",
         )
-        logger.error("".join(traceback.format_exception(E)))
+        logger.error("Failed to fetch from last.fm", exc_info=True)
         return
     if song:
         await ctx.send(
@@ -188,18 +188,17 @@ async def whoami_discord(ctx: Context) -> None:
 async def markov_discord(ctx: Context, word: str = None) -> None:
     if word is not None and " " in word:
         word = word.split()[0]
-    proposed = (
-        ctx.bot.markov.generate_text(word)
-        .replace("\\n", "")
+    proposed = ctx.bot.markov.generate_text(word)
+    if proposed == word:
+        proposed = f'Chain failed. (Firepup has never been recorded saying "{word}")'
+    await ctx.send(
+        proposed.replace("\\n", "")
         .replace("\n", "")
         .replace("_", "\\_")
         .replace("*", "\\*")
         .replace("||", "\\|\\|")
         .replace("\\", "\\\\")
     )
-    if proposed == word:
-        proposed = f'Chain failed. (Firepup has never been recorded saying "{word}")'
-    await ctx.send(proposed)
 
 
 async def slap_discord(ctx: Context, *, target: str = "") -> None:
