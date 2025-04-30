@@ -3,7 +3,8 @@
 from subprocess import run, PIPE
 import random as r
 from typing import Any, Callable
-import re, checks, bare, config as conf
+import re
+import checks, bare, config as conf
 
 
 def fpmp(bot: bare.bot, chan: str, name: str, message: str) -> None:
@@ -11,8 +12,13 @@ def fpmp(bot: bare.bot, chan: str, name: str, message: str) -> None:
     bot.msg("https://open.spotify.com/playlist/4ctNy3O0rOwhhXIKyLvUZM", chan)
 
 
+def fplq(bot: bare.bot, chan: str, name: str, message: str) -> None:
+    bot.msg("Firepup's listen queue", chan)
+    bot.msg("https://open.spotify.com/playlist/20PLdgeBNrCC63Bufg50eK", chan)
+
+
 def version(bot: bare.bot, chan: str, name: str, message: str) -> None:
-    bot.msg("Version: " + bot.__version__, chan)
+    bot.msg("Version: " + bot.__version__ + " (IRC)", chan)
 
 
 def goat(bot: bare.bot, chan: str, name: str, message: str) -> None:
@@ -144,7 +150,7 @@ def eball(bot: bare.bot, chan: str, name: str, message: str) -> None:
 
 def debug(bot: bare.bot, chan: str, name: str, message: str) -> None:
     dbg_out = {
-        "VERSION": bot.__version__,
+        "VERSION": bot.__version__ + " (IRC)",
         "NICKLEN": bot.nicklen,
         "NICK": bot.nick,
         "ADMINS": str(bot.adminnames) + " (Does not include hostname checks)",
@@ -212,13 +218,14 @@ def fmpull(bot: bare.bot, chan: str, name: str, message: str) -> None:
             chan,
         )
         bot.log(str(E), "FATAL")
+        return
     if song:
         bot.msg(
             "Firepup is currently listening to: " + str(song),
             chan,
         )
     else:
-        bot.msg("Firepup currently has his music stopped :/", chan)
+        bot.msg("Firepup currently has their music stopped :/", chan)
 
 
 def whoami(bot: bare.bot, chan: str, name: str, message: str) -> None:
@@ -414,6 +421,7 @@ data: dict[str, dict[str, Any]] = {
     "op me": {"prefix": False, "aliases": [], "check": checks.admin},
     "whoami": {"prefix": True, "aliases": []},
     "fpmp": {"prefix": True, "aliases": []},
+    "fplq": {"prefix": True, "aliases": []},
     "version": {"prefix": True, "aliases": ["ver", "v"]},
     "np": {"prefix": True, "aliases": []},
     "markov": {"prefix": True, "aliases": ["m"]},
@@ -452,6 +460,7 @@ call: dict[str, Callable[[bare.bot, str, str, str], None]] = {
     "op me": op,
     "whoami": whoami,
     "fpmp": fpmp,
+    "fplq": fplq,
     "version": version,
     "np": fmpull,
     "markov": markov,

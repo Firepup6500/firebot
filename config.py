@@ -35,7 +35,7 @@ hsbl = DNSBLDomainChecker(providers=providers)
 hardbl: list[str] = ["146.70.59.36"]
 
 load_dotenv()
-__version__ = "v3.0.22"
+__version__ = "v3.0.23"
 npbase: str = (
     "\\[\x0303last\\.fm\x03\\] [A-Za-z0-9_[\\]{}\\|\\-^]{1,$MAX} (is listening|last listened) to: \x02.+ - .*\x02( \\([0-9]+ plays\\)( \\[.*\\])?)?"
 )
