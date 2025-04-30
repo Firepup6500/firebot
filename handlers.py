@@ -5,7 +5,7 @@ from typing import Union, Callable
 from traceback import format_exc
 import re, checks, bare
 from overrides import bytes
-import config as conf, commands as cmds
+import config as conf, commands as cmds, utils
 
 
 def CTCP(bot: bare.bot, msg: str) -> bool:
@@ -75,7 +75,7 @@ def PRIVMSG(bot: bare.bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
     else:
         message = msg.split("PRIVMSG", 1)[1].split(":", 1)[1].strip()
     chan = msg.split("PRIVMSG", 1)[1].split(":", 1)[0].strip()
-    message = conf.sub(message, bot, chan, name)
+    message = utils.sub(message, bot, chan, name)
     if chan in bot.ignores:
         return None, None
     bot.log(
@@ -102,9 +102,9 @@ def PRIVMSG(bot: bare.bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
     for cmd, data in cmds.data.items():
         triggers = [cmd]
         triggers.extend(data["aliases"])
-        triggers = list(conf.sub(call, bot, chan, name).lower() for call in triggers)
-        if conf.cmdFind(
-            conf.sub(message, bot, chan, name).lower(),
+        triggers = list(utils.sub(call, bot, chan, name).lower() for call in triggers)
+        if utils.cmdFind(
+            utils.sub(message, bot, chan, name).lower(),
             triggers,
             data["prefix"],
         ):
@@ -137,13 +137,13 @@ def PRIVMSG(bot: bare.bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
     if not handled:
         for check in cmds.regexes:
             if re.search(
-                conf.sub(check, bot, chan, name),
+                utils.sub(check, bot, chan, name),
                 message,
             ):
                 cmds.call[check](bot, chan, name, message)
                 handled = True
                 break
-    if not handled and conf.cmdFind(message, ["reload", "r"]):
+    if not handled and utils.cmdFind(message, ["reload", "r"]):
         if checks.admin(bot, name, host, chan, "reload"):
             return "reload", chan
         handled = True
@@ -163,7 +163,7 @@ def PRIVMSG(bot: bare.bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
         if bot.autoMethod == "QUOTE":
             r.seed()
             with open("mastermessages.txt", "r", encoding="utf-8") as mm:
-                sel = conf.decode_escapes(
+                sel = utils.decode_escapes(
                     r.sample(mm.readlines(), 1)[0].replace("\\n", "").replace("\n", "")
                 )
         else:
@@ -208,7 +208,7 @@ def JOIN(bot: bare.bot, msg: str) -> tuple[None, None]:
     nick = msg.split("!", 1)[0][1:]
     hostname = msg.split("@", 1)[1].split(" ", 1)[0].strip()
     chan = msg.split("#")[-1].strip()
-    conf.dnsblHandler(bot, nick, hostname, chan)
+    utils.dnsblHandler(bot, nick, hostname, chan)
     return None, None
 
 

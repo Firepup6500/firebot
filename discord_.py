@@ -5,6 +5,7 @@ import logging
 import traceback, discord
 from discord.ext.commands import Bot, is_owner, Context
 from dotenv import load_dotenv
+import config as conf
 from markov import MarkovBot
 from discord_ext import checks
 from discord_ext import events
@@ -29,6 +30,8 @@ with open("mastermessages.txt", encoding="utf-8") as f:
 bot.init = False
 logger.addHandler(shared.handler)
 bot.logger = logger
+bot.__version__ = conf.__version__
+bot.lastfmLink = conf.lastfmLink
 
 events.register_events(bot, env)
 utils.register_commands(bot)
@@ -46,6 +49,9 @@ async def rel(ctx: Context):
         reload(utils)
         reload(checks)
         reload(events)
+        reload(conf)
+        bot.__version__ = conf.__version__
+        bot.lastfmLink = conf.lastfmLink
         events.register_events(bot, env)
         utils.deregister_commands(bot)
         utils.register_commands(bot)

@@ -4,7 +4,7 @@ from subprocess import run, PIPE
 import random as r
 from typing import Any, Callable
 import re
-import checks, bare, config as conf
+import checks, bare, config as conf, utils
 
 
 def fpmp(bot: bare.bot, chan: str, name: str, message: str) -> None:
@@ -127,7 +127,7 @@ def quote(bot: bare.bot, chan: str, name: str, message: str) -> None:
             q = ["Sorry, your query is invalid regex. Please try again."]
         if not q:
             q = [f'No results for "{query}" ']
-        sel = conf.decode_escapes(
+        sel = utils.decode_escapes(
             r.sample(q, 1)[0].replace("\\n", "").replace("\n", "")
         )
         bot.msg(sel, chan)
@@ -304,7 +304,7 @@ def check(bot: bare.bot, chan: str, name: str, message: str) -> None:
         nick = msg.split("!")[0]
         host = msg.split("@", 1)[1]
         cache = host in bot.dns
-        dnsbl, raws = conf.dnsblHandler(bot, nick, host, chan)
+        dnsbl, raws = utils.dnsblHandler(bot, nick, host, chan)
         bot.msg(
             f"Blacklist check: {'(Cached) ' if cache else ''}{dnsbl if dnsbl else 'Safe.'} ({raws})",
             chan,
@@ -313,7 +313,7 @@ def check(bot: bare.bot, chan: str, name: str, message: str) -> None:
         try:
             host = message.split(" ", 1)[1]
             cache = host in bot.dns
-            dnsbl, raws = conf.dnsblHandler(
+            dnsbl, raws = utils.dnsblHandler(
                 bot, "thisusernameshouldbetoolongtoeveractuallybeinuse", host, chan
             )
             bot.msg(

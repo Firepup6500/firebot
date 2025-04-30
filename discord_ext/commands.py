@@ -6,7 +6,7 @@ from sys import exit
 from typing import Any, Callable
 import traceback
 from discord.ext.commands import Context
-import config as conf
+from utils import decode_escapes
 from .shared import handler
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ async def fplq_discord(ctx: Context) -> None:
 
 
 async def version_discord(ctx: Context) -> None:
-    await ctx.send("Version: " + conf.__version__ + " (Discord)")
+    await ctx.send("Version: " + ctx.bot.__version__ + " (Discord)")
 
 
 async def botlist_discord(ctx: Context) -> None:
@@ -90,7 +90,7 @@ async def quote_discord(ctx: Context, *, regex: str = "") -> None:
             q = ["Sorry, your query is invalid regex. Please try again."]
         if not q:
             q = [f'No results for "{regex}" ']
-        sel = conf.decode_escapes(
+        sel = decode_escapes(
             r.sample(q, 1)[0]
             .replace("\\n", "")
             .replace("\n", "")
@@ -116,7 +116,7 @@ async def eball_discord(ctx: Context, *, question: str = "") -> None:
 
 async def debug_discord(ctx: Context) -> None:
     dbg_out = {
-        "VERSION": conf.__version__ + " (Discord)",
+        "VERSION": ctx.bot.__version__ + " (Discord)",
         "NICKLEN": "N/A on discord",
         "NICK": ctx.guild.me.nick if ctx.guild.me.nick else ctx.guild.me.name,
         "ADMINS": ctx.bot.owner_ids,
@@ -164,7 +164,7 @@ async def fmpull_discord(ctx: Context) -> None:
     # pylint: disable=broad-exception-caught,fixme
     song = None
     try:
-        song = conf.lastfmLink.get_user("Firepup650").get_now_playing()
+        song = ctx.bot.lastfmLink.get_user("Firepup650").get_now_playing()
     except Exception as E:  # TODO: Proper catch
         await ctx.send(
             "Sorry, the last.fm api isn't cooperating, please try again in a minute",
