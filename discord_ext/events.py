@@ -24,7 +24,9 @@ def register_events(bot, env):
     async def on_command_error(ctx: commands.Context, error: commands.CommandError):
         embed = discord.Embed(title="Error")
         full_error = error
-        if isinstance(error, commands.CommandInvokeError):
+        if isinstance(
+            error, (commands.CommandInvokeError, commands.errors.HybridCommandError)
+        ):
             error = error.original
         if isinstance(error, commands.CommandNotFound):
             await ctx.send(f'No such command: {error.args[0].split("\"")[1]}')
@@ -57,19 +59,37 @@ def register_events(bot, env):
 
     @bot.event
     async def on_member_join(member):
-        sys_channel = member.guild.system_channel
-        if sys_channel:
-            await sys_channel.send(f"Woah {member.mention} has joined :eyes:")
+        channel_id = (await bot.database.get(member.guild.id)).get("welcome_channel")
+        channel = member.guild.get_channel(int(channel_id))
+        if channel:
+            await channel.send(f"Woah {member.mention} has joined :eyes:")
+        if not member.bot:
+            user_role_id = (await bot.database.get(member.guild.id)).get(
+                "on_user_join_role"
+            )
+            user_role = member.guild.get_role(int(user_role_id))
+            if user_role:
+                await member.add_roles(user_role)
+        else:
+            bot_role_id = (await bot.database.get(member.guild.id)).get(
+                "on_bot_join_role"
+            )
+            bot_role = member.guild.get_role(int(bot_role_id))
+            if bot_role:
+                await member.add_roles(bot_role)
 
     @bot.event
     async def on_member_remove(member):
-        sys_channel = member.guild.system_channel
-        if sys_channel:
-            await sys_channel.send(f"Woah {member.mention} has left :eyes:")
+        channel_id = (await bot.database.get(member.guild.id)).get("leave_channel")
+        channel = member.guild.get_channel(int(channel_id))
+        if channel:
+            await channel.send(f"Woah {member.mention} has left :eyes:")
 
     @bot.event
     async def on_guild_join(guild):
-        await bot.log_channel.send("Woah I added to somewhere :eyes:")
+        await bot.log_channel.send("Woah I got added to somewhere :eyes:")
+        if not await bot.db.get(guild.id):
+            await bot.db.set(guild.id, {"init": True})
 
     @bot.event
     async def on_guild_remove(guild):

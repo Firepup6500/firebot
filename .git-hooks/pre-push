@@ -10,7 +10,11 @@ fi
 
 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
-REMOTE_NAME=$(git config --get branch."$BRANCH_NAME".remote)
+if [ -n "$1" ]; then
+  REMOTE_NAME=$1
+else
+  REMOTE_NAME=$(git config --get branch."$BRANCH_NAME".remote)
+fi
 
 if [ -z "$REMOTE_NAME" ]; then
   echo No remote configured for current branch

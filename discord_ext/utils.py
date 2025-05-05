@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord.app_commands import describe
 from .commands import data_discord, call_discord
 from .checks import is_ready, is_server_owner, is_server_admin
-from .shared import handler
+from .shared import handler, with_typing
 
 logger = logging.getLogger(__name__)
 logger.addHandler(handler)
@@ -17,50 +17,72 @@ def register_commands(bot):
         if data_discord[name]["owner"]:
             bot.hybrid_command(name=name, description=data_discord[name]["desc"])(
                 commands.is_owner()(
-                    is_ready()(describe(**data_discord[name]["params"])(func))
+                    is_ready()(
+                        describe(**data_discord[name]["params"])(with_typing()(func))
+                    )
                 )
             )
             for _, alias in enumerate(data_discord[name]["aliases"]):
                 logger.debug("Registering command alias: %s", alias)
                 bot.hybrid_command(name=alias, description=data_discord[name]["desc"])(
                     commands.is_owner()(
-                        is_ready()(describe(**data_discord[name]["params"])(func))
+                        is_ready()(
+                            describe(**data_discord[name]["params"])(
+                                with_typing()(func)
+                            )
+                        )
                     )
                 )
         elif data_discord[name]["server_owner"]:
             bot.hybrid_command(name=name, description=data_discord[name]["desc"])(
                 is_server_owner()(
-                    is_ready()(describe(**data_discord[name]["params"])(func))
+                    is_ready()(
+                        describe(**data_discord[name]["params"])(with_typing()(func))
+                    )
                 )
             )
             for _, alias in enumerate(data_discord[name]["aliases"]):
                 logger.debug("Registering command alias: %s", alias)
                 bot.hybrid_command(name=alias, description=data_discord[name]["desc"])(
                     is_server_owner()(
-                        is_ready()(describe(**data_discord[name]["params"])(func))
+                        is_ready()(
+                            describe(**data_discord[name]["params"])(
+                                with_typing()(func)
+                            )
+                        )
                     )
                 )
         elif data_discord[name]["server_admin"]:
             bot.hybrid_command(name=name, description=data_discord[name]["desc"])(
                 is_server_admin()(
-                    is_ready()(describe(**data_discord[name]["params"])(func))
+                    is_ready()(
+                        describe(**data_discord[name]["params"])(with_typing()(func))
+                    )
                 )
             )
             for _, alias in enumerate(data_discord[name]["aliases"]):
                 logger.debug("Registering command alias: %s", alias)
                 bot.hybrid_command(name=alias, description=data_discord[name]["desc"])(
                     is_server_admin()(
-                        is_ready()(describe(**data_discord[name]["params"])(func))
+                        is_ready()(
+                            describe(**data_discord[name]["params"])(
+                                with_typing()(func)
+                            )
+                        )
                     )
                 )
         else:
             bot.hybrid_command(name=name, description=data_discord[name]["desc"])(
-                is_ready()(describe(**data_discord[name]["params"])(func))
+                is_ready()(
+                    describe(**data_discord[name]["params"])(with_typing()(func))
+                )
             )
             for _, alias in enumerate(data_discord[name]["aliases"]):
                 logger.debug("Registering command alias: %s", alias)
                 bot.hybrid_command(name=alias, description=data_discord[name]["desc"])(
-                    is_ready()(describe(**data_discord[name]["params"])(func))
+                    is_ready()(
+                        describe(**data_discord[name]["params"])(with_typing()(func))
+                    )
                 )
     logger.info("Registered commands")
 

@@ -6,3 +6,4 @@ tmpbkp/**
 .replit
 replit.nix
 modres.sh
+server-data.db

@@ -4,6 +4,7 @@ import random as r
 import re, logging
 from sys import exit
 from typing import Any, Callable
+import discord
 from discord.ext.commands import Context
 from utils import decode_escapes
 from .shared import handler
@@ -21,6 +22,12 @@ async def fpmp_discord(ctx: Context) -> None:
 async def fplq_discord(ctx: Context) -> None:
     await ctx.send(
         "Firepup's listen queue\nhttps://open.spotify.com/playlist/20PLdgeBNrCC63Bufg50eK"
+    )
+
+
+async def fpo_discord(ctx: Context) -> None:
+    await ctx.send(
+        "Firepup's obsessions playlist\nhttps://open.spotify.com/playlist/5kdR1GsT0gG6ISvskpHyMS"
     )
 
 
@@ -160,11 +167,11 @@ async def reboot_discord(ctx: Context) -> None:
     exit("Reboot")
 
 
-async def fmpull_discord(ctx: Context) -> None:
+async def fmpull_discord(ctx: Context, user: str = "Firepup650") -> None:
     # pylint: disable=broad-exception-caught,fixme
     song = None
     try:
-        song = ctx.bot.lastfmLink.get_user("Firepup650").get_now_playing()
+        song = ctx.bot.lastfmLink.get_user(user).get_now_playing()
     except Exception:  # TODO: Proper catch
         await ctx.send(
             "Sorry, the last.fm api isn't cooperating, please try again in a minute",
@@ -173,10 +180,10 @@ async def fmpull_discord(ctx: Context) -> None:
         return
     if song:
         await ctx.send(
-            "Firepup is currently listening to: " + str(song),
+            f"{user} is currently listening to: " + str(song),
         )
     else:
-        await ctx.send("Firepup currently has their music stopped :/")
+        await ctx.send(f"{user} currently has their music stopped")
 
 
 async def whoami_discord(ctx: Context) -> None:
@@ -227,6 +234,96 @@ async def error_tester(ctx: Context) -> None:
 
 async def ready(ctx: Context) -> None:
     await ctx.send("Yeah I'm ready, what?")
+
+
+async def reinit(ctx: Context) -> None:
+    await ctx.bot.database.delete(ctx.guild.id)
+    await ctx.bot.database.set(ctx.guild.id, {"init": True})
+    await ctx.send("Re-initalized guild config")
+
+
+async def drop_database(ctx: Context, i_am_sure=None) -> None:
+    if i_am_sure:
+        await ctx.bot.database.deleteAll()
+        await ctx.send("Dropped the database!")
+    else:
+        await ctx.send("No.")
+
+
+valid_settings = [
+    "welcome_channel",
+    "on_user_join_role",
+    "on_bot_join_role",
+    "leave_channel",
+]
+valid_settings_str = ", ".join(valid_settings)
+
+
+async def set_setting(ctx: Context, setting: str = None, value: str = None) -> None:
+    if setting is None:
+        await ctx.send(f"Valid settings are: `{valid_settings_str}`")
+        return
+    data = await ctx.bot.database.get(ctx.guild.id)
+    if setting not in valid_settings:
+        await ctx.send(
+            f"`{setting}` is not a valid setting. Valid settings are: `{valid_settings_str}`"
+        )
+        return
+    old_value = data.get(setting)
+    value_str = f"`{value}`"
+    if value is not None:
+        if setting.endswith("_channel"):
+            value = value[2:-1]
+            if not value.isdigit():
+                await ctx.send(f"`{setting}` must be a channel.")
+                return
+            val = ctx.guild.get_channel(int(value))
+            if not isinstance(val, discord.TextChannel):
+                await ctx.send(f"`{setting}` must be a text channel.")
+                return
+            value_str = val.mention
+        elif setting.endswith("_role"):
+            value = value[3:-1]
+            if not value.isdigit():
+                await ctx.send(f"`{setting}` must be a role.")
+                return
+            val = ctx.guild.get_role(int(value))
+            if not isinstance(val, discord.Role):
+                await ctx.send(f"`{setting}` must be a role.")
+                return
+            value_str = val.id
+    if old_value == value:
+        await ctx.send(f"`{setting}` unchanged")
+    elif not old_value:
+        await ctx.send(f"Set `{setting}` to {value_str}")
+    elif not value:
+        await ctx.send(f"`{setting}` has been unset")
+    else:
+        await ctx.send(f"Changed `{setting}` to {value_str}")
+    data[setting] = value
+    await ctx.bot.database.set(ctx.guild.id, data)
+
+
+async def get_setting(ctx: Context, setting: str = None) -> None:
+    if setting is None:
+        await ctx.send(f"Valid settings are: `{valid_settings_str}`")
+        return
+    data = await ctx.bot.database.get(ctx.guild.id)
+    if setting not in valid_settings:
+        await ctx.send(
+            f"`{setting}` is not a valid setting. Valid settings are: `{valid_settings_str}`"
+        )
+        return
+    value = data.get(setting)
+    value_str = value
+    if value is not None:
+        if setting.endswith("_channel"):
+            val = ctx.guild.get_channel(int(value))
+            value_str = val.mention
+    if not value:
+        await ctx.send(f"`{setting}` is not set for this guild")
+    else:
+        await ctx.send(f"`{setting}` is set to {value_str} in this guild")
 
 
 data_discord: dict[str, dict[str, Any]] = {
@@ -354,6 +451,14 @@ data_discord: dict[str, dict[str, Any]] = {
         "desc": "Get the link to Firepup's listen queue on Spotify",
         "params": {},
     },
+    "fpo": {
+        "owner": False,
+        "server_owner": False,
+        "server_admin": False,
+        "aliases": ["obsessions"],
+        "desc": "Get the link to Firepup's obessions playlist on Spotify",
+        "params": {},
+    },
     "version": {
         "owner": False,
         "server_owner": False,
@@ -399,12 +504,44 @@ data_discord: dict[str, dict[str, Any]] = {
         "params": {},
     },
     "ready": {
-        "owner": True,
+        "owner": False,
         "server_owner": False,
         "server_admin": False,
         "aliases": [],
         "desc": "Test command to see if the bot is ready for commands",
         "params": {},
+    },
+    "reinit": {
+        "owner": True,
+        "server_owner": False,
+        "server_admin": False,
+        "aliases": [],
+        "desc": "Onwers only - Reset all settings for the guild this is run in",
+        "params": {},
+    },
+    "drop_database": {
+        "owner": True,
+        "server_owner": False,
+        "server_admin": False,
+        "aliases": [],
+        "desc": "Onwers only - !! DANGER !! Drop ALL settings for all guilds!",
+        "params": {"i_am_sure": "Are you SURE you want to drop it?"},
+    },
+    "set": {
+        "owner": False,
+        "server_owner": False,
+        "server_admin": True,
+        "aliases": [],
+        "desc": "Server Admins only - Set one of the settings for your guild",
+        "params": {"setting": "Setting name", "value": "Setting value"},
+    },
+    "get": {
+        "owner": False,
+        "server_owner": False,
+        "server_admin": True,
+        "aliases": [],
+        "desc": "Server Admins only - Get one of the settings for your guild",
+        "params": {"setting": "Setting name"},
     },
 }
 call_discord: dict[str, Callable[Any, None]] = {
@@ -429,4 +566,8 @@ call_discord: dict[str, Callable[Any, None]] = {
     "slap": slap_discord,
     "error_tester": error_tester,
     "ready": ready,
+    "reinit": reinit,
+    "drop_database": drop_database,
+    "set": set_setting,
+    "get": get_setting,
 }

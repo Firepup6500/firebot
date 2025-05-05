@@ -5,6 +5,7 @@ import logging
 import discord
 from discord.ext.commands import Bot, is_owner, Context
 from dotenv import load_dotenv
+from fpsql import asyncSql
 import config as conf
 import utils as global_utils
 from markov import MarkovBot
@@ -35,6 +36,7 @@ logger.addHandler(shared.handler)
 bot.logger = logger
 bot.__version__ = conf.__version__
 bot.lastfmLink = conf.lastfmLink
+bot.database = asyncSql("server-data.db")
 
 
 async def maybe_defer(ctx: Context):
@@ -57,6 +59,7 @@ utils.register_commands(bot)
 )
 @is_owner()
 @checks.is_ready()
+@shared.with_typing()
 async def rel(ctx: Context):
     logger.info("Reloading")
     # pylint: disable=broad-exception-caught

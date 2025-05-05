@@ -1,6 +1,20 @@
-# pylint: disable=missing-module-docstring
+# pylint: disable=missing-module-docstring,missing-function-docstring
 import logging
+from functools import wraps
 from discord.utils import _ColourFormatter, stream_supports_colour
+
+
+def with_typing():
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(ctx, *args, **kwargs):
+            async with ctx.typing():
+                return await func(ctx, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
 
 handler = logging.StreamHandler()
 if isinstance(handler, logging.StreamHandler) and stream_supports_colour(

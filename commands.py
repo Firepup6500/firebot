@@ -17,6 +17,11 @@ def fplq(bot: bare.bot, chan: str, name: str, message: str) -> None:
     bot.msg("https://open.spotify.com/playlist/20PLdgeBNrCC63Bufg50eK", chan)
 
 
+def fpo(bot: bare.bot, chan: str, name: str, message: str) -> None:
+    bot.msg("Firepup's obsessions playlist", chan)
+    bot.msg("https://open.spotify.com/playlist/5kdR1GsT0gG6ISvskpHyMS", chan)
+
+
 def version(bot: bare.bot, chan: str, name: str, message: str) -> None:
     bot.msg("Version: " + bot.__version__ + " (IRC)", chan)
 
@@ -221,11 +226,11 @@ def fmpull(bot: bare.bot, chan: str, name: str, message: str) -> None:
         return
     if song:
         bot.msg(
-            "Firepup is currently listening to: " + str(song),
+            "Firepup650 is currently listening to: " + str(song),
             chan,
         )
     else:
-        bot.msg("Firepup currently has their music stopped :/", chan)
+        bot.msg("Firepup650 currently has their music stopped", chan)
 
 
 def whoami(bot: bare.bot, chan: str, name: str, message: str) -> None:
@@ -420,13 +425,12 @@ data: dict[str, dict[str, Any]] = {
     "ping": {"prefix": True, "aliases": []},
     "op me": {"prefix": False, "aliases": [], "check": checks.admin},
     "whoami": {"prefix": True, "aliases": []},
-    "fpmp": {"prefix": True, "aliases": []},
-    "fplq": {"prefix": True, "aliases": []},
+    "fpmp": {"prefix": True, "aliases": ["playlist"]},
+    "fplq": {"prefix": True, "aliases": ["fprq", "queue"]},
+    "fpo": {"prefix": True, "aliases": ["obsessions"]},
     "version": {"prefix": True, "aliases": ["ver", "v"]},
     "np": {"prefix": True, "aliases": []},
     "markov": {"prefix": True, "aliases": ["m"]},
-    "setStatus": {"prefix": True, "aliases": ["sS"], "check": checks.admin},
-    "getStatus": {"prefix": True, "aliases": ["gS"]},
     "check": {"prefix": True, "aliases": [], "check": checks.admin},
     "slap": {"prefix": True, "aliases": ["s"]},
     "good morning": {
@@ -461,11 +465,10 @@ call: dict[str, Callable[[bare.bot, str, str, str], None]] = {
     "whoami": whoami,
     "fpmp": fpmp,
     "fplq": fplq,
+    "fpo": fpo,
     "version": version,
     "np": fmpull,
     "markov": markov,
-    "setStatus": setStatus,
-    "getStatus": getStatus,
     "check": check,
     "slap": slap,
     "good morning": morning,

@@ -14,7 +14,7 @@ def is_ready():
 
 def is_server_owner():
     def predicate(ctx: Context):
-        if ctx.bot.is_owner(ctx.author) or ctx.author == ctx.guild.owner:
+        if ctx.author.id in ctx.bot.owner_ids or ctx.author == ctx.guild.owner:
             return True
         raise NotServerOwner
 
@@ -24,7 +24,7 @@ def is_server_owner():
 def is_server_admin():
     def predicate(ctx: Context):
         if (
-            ctx.bot.is_owner(ctx.author)
+            ctx.author.id in ctx.bot.owner_ids
             or ctx.author == ctx.guild.owner
             or any(
                 role.permissions.administrator
