@@ -1,0 +1,3 @@
+[submodule "openttd-bridge"]
+	path = openttd-bridge
+	url = https://github.com/Xaroth/libottdadmin2
