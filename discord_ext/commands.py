@@ -4,6 +4,7 @@ import random as r
 import re, logging
 from sys import exit
 from typing import Any, Callable
+from urllib.parse import unquote
 import discord
 from discord.ext.commands import Context
 from utils import decode_escapes
@@ -162,6 +163,20 @@ async def debugEval_discord(ctx: Context, *, code: str = "") -> None:
         await ctx.send(f"Exception: {E}")
 
 
+async def debugEvalRaw_discord(ctx: Context, *, code: str = "") -> None:
+    # pylint: disable=broad-exception-caught,eval-used
+    try:
+        out = str(eval(code))
+        if len(out) == 0:
+            await ctx.send("<No Output>")
+        while len(out) > 0:
+            chunk = out[:2000]
+            out = out[2000:]
+            await ctx.send(chunk)
+    except Exception as E:
+        await ctx.send(f"Exception: {E}")
+
+
 async def reboot_discord(ctx: Context) -> None:
     await ctx.send("Rebooting")
     exit("Reboot")
@@ -180,7 +195,11 @@ async def fmpull_discord(ctx: Context, user: str = "Firepup650") -> None:
         return
     if song:
         await ctx.send(
-            f"{user} is currently listening to: " + str(song),
+            f"{user} is currently listening to: ["
+            + str(song)
+            + "]("
+            + unquote(song.get_url())
+            + ")",
         )
     else:
         await ctx.send(f"{user} currently has their music stopped")
@@ -227,6 +246,9 @@ async def slap_discord(ctx: Context, *, target: str = "") -> None:
     )
 
 
+# Discord-only commands
+
+
 async def error_tester(ctx: Context) -> None:
     # pylint: disable=broad-exception-raised
     raise Exception("Intentional Error, for testing")
@@ -263,12 +285,12 @@ async def set_setting(ctx: Context, setting: str = None, value: str = None) -> N
     if setting is None:
         await ctx.send(f"Valid settings are: `{valid_settings_str}`")
         return
-    data = await ctx.bot.database.get(ctx.guild.id)
     if setting not in valid_settings:
         await ctx.send(
             f"`{setting}` is not a valid setting. Valid settings are: `{valid_settings_str}`"
         )
         return
+    data = await ctx.bot.database.get(ctx.guild.id)
     old_value = data.get(setting)
     value_str = f"`{value}`"
     if value is not None:
@@ -306,14 +328,24 @@ async def set_setting(ctx: Context, setting: str = None, value: str = None) -> N
 
 async def get_setting(ctx: Context, setting: str = None) -> None:
     if setting is None:
-        await ctx.send(f"Valid settings are: `{valid_settings_str}`")
+        data = await ctx.bot.database.get(ctx.guild.id)
+        resp = "Settings in this guild:"
+        for setting_name in valid_settings:
+            value = data.get(setting_name)
+            if value is None:
+                value = "<Not set>"
+            elif setting_name.endswith("_channel"):
+                val = ctx.guild.get_channel(int(value))
+                value = val.mention
+            resp = resp + f"\n\- {setting_name} = {value}"
+        await ctx.send(resp)
         return
-    data = await ctx.bot.database.get(ctx.guild.id)
     if setting not in valid_settings:
         await ctx.send(
             f"`{setting}` is not a valid setting. Valid settings are: `{valid_settings_str}`"
         )
         return
+    data = await ctx.bot.database.get(ctx.guild.id)
     value = data.get(setting)
     value_str = value
     if value is not None:
@@ -326,6 +358,10 @@ async def get_setting(ctx: Context, setting: str = None) -> None:
         await ctx.send(f"`{setting}` is set to {value_str} in this guild")
 
 
+# Data dicts
+
+
+# Metadata dict
 data_discord: dict[str, dict[str, Any]] = {
     "botlist": {
         "owner": False,
@@ -388,6 +424,14 @@ data_discord: dict[str, dict[str, Any]] = {
         "server_owner": False,
         "server_admin": False,
         "aliases": ["dbgeval", "de"],
+        "desc": "Owners only - Literally just eval(code)",
+        "params": {"code": "eval(code)"},
+    },
+    "debugevalraw": {
+        "owner": True,
+        "server_owner": False,
+        "server_admin": False,
+        "aliases": ["dbgevalraw", "der"],
         "desc": "Owners only - Literally just eval(code)",
         "params": {"code": "eval(code)"},
     },
@@ -544,6 +588,7 @@ data_discord: dict[str, dict[str, Any]] = {
         "params": {"setting": "Setting name"},
     },
 }
+# Call dict
 call_discord: dict[str, Callable[Any, None]] = {
     "botlist": botlist_discord,
     "bugs": bugs_discord,
@@ -553,6 +598,7 @@ call_discord: dict[str, Callable[Any, None]] = {
     "debug": debug_discord,
     "debuginternal": debugInternal_discord,
     "debugeval": debugEval_discord,
+    "debugevalraw": debugEvalRaw_discord,
     "8ball": eball_discord,
     "quote": quote_discord,
     "help": help_discord,

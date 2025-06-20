@@ -57,7 +57,7 @@ servers: dict[str, dict[str, Any]] = {
         "threads": ["pingMon"],
         "dnsblMode": "kickban",
     },
-    "replirc": {
+    "fireirc": {
         "address": "127.0.0.1",
         "pass": env["replirc_pass"],
         "channels": {
@@ -74,7 +74,7 @@ servers: dict[str, dict[str, Any]] = {
             "#opers": 0,
         },
         "ignores": ["#fp-radio"],
-        "admins": ["h-tl"],
+        "admins": [],
         "hosts": ["owner.firepi"],
         "threads": ["radio"],
         "autoMethod": "MARKOV",
