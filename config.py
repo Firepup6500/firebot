@@ -59,7 +59,7 @@ servers: dict[str, dict[str, Any]] = {
     },
     "fireirc": {
         "address": "127.0.0.1",
-        "pass": env["replirc_pass"],
+        "pass": env["fireirc_pass"],
         "channels": {
             "#random": 0,
             "#dice": 0,
@@ -75,7 +75,7 @@ servers: dict[str, dict[str, Any]] = {
         },
         "ignores": ["#fp-radio"],
         "admins": [],
-        "hosts": ["owner.firepi"],
+        "hosts": ["owner.irc.firepup650.com"],
         "threads": ["radio"],
         "autoMethod": "MARKOV",
         "dnsblMode": "akill",
