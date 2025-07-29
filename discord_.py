@@ -1,11 +1,11 @@
 # pylint: disable=missing-module-docstring,missing-function-docstring
 from os import environ as env
 from importlib import reload
-import logging
+import logging, warnings, sys
 import discord
 from discord.ext.commands import Bot, is_owner, Context
 from dotenv import load_dotenv
-from fpsql import asyncSql
+from fpsql.asyncio import sql as asyncSql
 import config as conf
 import utils as global_utils
 from markov import MarkovBot
@@ -18,7 +18,7 @@ from discord_ext import commands
 
 load_dotenv()
 
-
+warnings.filterwarnings("ignore", category=DeprecationWarning, module=r"discord\..*")
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 logging.getLogger("discord.http").setLevel(logging.INFO)
@@ -89,5 +89,12 @@ async def rel(ctx: Context):
         logger.error("Failed to reload", exc_info=True)
 
 
-bot.run(env["DISCORD_TOKEN"], log_handler=None)
-print()
+if __name__ == "__main__":
+    bot.run(env["DISCORD_TOKEN"], log_handler=None)
+    logger.error("Recieved ^C, cleaning up asyncio before ternmination")
+    loop = conf.loop
+    if not loop.is_closed():
+        loop.run_until_complete(loop.shutdown_asyncgens())
+        loop.close()
+    logger.error("Terminating.")
+    sys.exit(0)

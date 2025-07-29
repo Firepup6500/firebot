@@ -1,4 +1,5 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,too-few-public-methods
+import asyncio
 from os import environ as env
 import re
 from typing import Any
@@ -28,13 +29,15 @@ class droneBL(BL.Provider):
 
 providers = BL.BASE_PROVIDERS + [droneBL("dnsbl.dronebl.org")]
 
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
 ipbl = DNSBLIpChecker(providers=providers)
 hsbl = DNSBLDomainChecker(providers=providers)
 
 hardbl: list[str] = ["146.70.59.36"]
 
 load_dotenv()
-__version__ = "v3.0.26-dev"
+__version__ = "v3.0.26"
 npbase: str = (
     "\\[\x0303last\\.fm\x03\\] [A-Za-z0-9_[\\]{}\\|\\-^]{1,$MAX} (is listening|last listened) to: \x02.+ - .*\x02( \\([0-9]+ plays\\)( \\[.*\\])?)?"
 )

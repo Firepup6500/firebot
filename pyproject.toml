@@ -6,9 +6,9 @@ authors = ["Firepup Sixfifty <firepup650@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-apiclient = "^1.0.4"
 python-dotenv = "^1.0.0"
 pylast = "^5.2.0"
+fpsql = "^1, !=1.0.26"
 
 [tool.poetry.dev-dependencies]
 black = "^24.4.2"

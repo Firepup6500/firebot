@@ -1,19 +1,23 @@
 #!/usr/bin/python3
 # pylint: disable=missing-module-docstring,missing-function-docstring
-from os import system
+import sys
+from subprocess import Popen
+from logs import log
 from threads import threadManager
 
 
-def launch(server: str) -> None:
-    system(f"python3 -u ircbot.py {server}")
+def launch(server: str) -> Popen:
+    with Popen(["python3", "-u", "ircbot.py", server]) as proc:
+        proc.wait()
 
 
-def launch_discord() -> None:
-    system("python3 -u discord_.py")
+def launch_discord() -> Popen:
+    with Popen(["python3", "-u", "discord_.py"]) as proc:
+        proc.wait()
 
 
 servers = {
-    #    "ircnow": {"noWrap": True, "func": launch, "args": ["ircnow"]},
+    "ircnow": {"noWrap": True, "func": launch, "args": ["ircnow"]},
     "fireirc": {"noWrap": True, "func": launch, "args": ["fireirc"]},
     #    "efnet": {"noWrap": True, "func": launch, "args": ["efnet"]},
     #    "backupbox": {"noWrap": True, "func": launch, "args": ["backupbox"]},
@@ -23,4 +27,8 @@ servers = {
 
 
 if __name__ == "__main__":
-    threadManager(servers, True, "CORE")
+    try:
+        threadManager(servers, True, "CORE")
+    except KeyboardInterrupt:
+        log("Terminating from ^C", "CORE", "EXIT")
+        sys.exit(0)

@@ -158,7 +158,7 @@ async def debugEval_discord(ctx: Context, *, code: str = "") -> None:
         while len(out) > 0:
             chunk = out[:2000]
             out = out[2000:]
-            await ctx.send(chunk)
+            await ctx.send(chunk, allowed_mentions=discord.AllowedMentions.none())
     except Exception as E:
         await ctx.send(f"Exception: {E}")
 
@@ -172,7 +172,7 @@ async def debugEvalRaw_discord(ctx: Context, *, code: str = "") -> None:
         while len(out) > 0:
             chunk = out[:2000]
             out = out[2000:]
-            await ctx.send(chunk)
+            await ctx.send(chunk, allowed_mentions=discord.AllowedMentions.none())
     except Exception as E:
         await ctx.send(f"Exception: {E}")
 
@@ -313,15 +313,21 @@ async def set_setting(ctx: Context, setting: str = None, value: str = None) -> N
             if not isinstance(val, discord.Role):
                 await ctx.send(f"`{setting}` must be a role.")
                 return
-            value_str = val.id
+            value_str = val.mention
     if old_value == value:
         await ctx.send(f"`{setting}` unchanged")
     elif not old_value:
-        await ctx.send(f"Set `{setting}` to {value_str}")
+        await ctx.send(
+            f"Set `{setting}` to {value_str}",
+            allowed_mentions=discord.AllowedMentions.none(),
+        )
     elif not value:
         await ctx.send(f"`{setting}` has been unset")
     else:
-        await ctx.send(f"Changed `{setting}` to {value_str}")
+        await ctx.send(
+            f"Changed `{setting}` to {value_str}",
+            allowed_mentions=discord.AllowedMentions.none(),
+        )
     data[setting] = value
     await ctx.bot.database.set(ctx.guild.id, data)
 
@@ -337,8 +343,11 @@ async def get_setting(ctx: Context, setting: str = None) -> None:
             elif setting_name.endswith("_channel"):
                 val = ctx.guild.get_channel(int(value))
                 value = val.mention
+            elif setting_name.endswith("_role"):
+                val = ctx.guild.get_role(int(value))
+                value = val.mention
             resp = resp + f"\n\- {setting_name} = {value}"
-        await ctx.send(resp)
+        await ctx.send(resp, allowed_mentions=discord.AllowedMentions.none())
         return
     if setting not in valid_settings:
         await ctx.send(
@@ -352,10 +361,16 @@ async def get_setting(ctx: Context, setting: str = None) -> None:
         if setting.endswith("_channel"):
             val = ctx.guild.get_channel(int(value))
             value_str = val.mention
+        elif setting.endswith("_role"):
+            val = ctx.guild.get_role(int(value))
+            value_str = val.mention
     if not value:
         await ctx.send(f"`{setting}` is not set for this guild")
     else:
-        await ctx.send(f"`{setting}` is set to {value_str} in this guild")
+        await ctx.send(
+            f"`{setting}` is set to {value_str} in this guild",
+            allowed_mentions=discord.AllowedMentions.none(),
+        )
 
 
 # Data dicts
