@@ -36,7 +36,7 @@ logger.addHandler(shared.handler)
 bot.logger = logger
 bot.__version__ = conf.__version__
 bot.lastfmLink = conf.lastfmLink
-bot.database = asyncSql("server-data.db")
+bot.database = asyncSql("discord-data.db")
 
 
 async def maybe_defer(ctx: Context):

@@ -6,4 +6,5 @@ tmpbkp/**
 .replit
 replit.nix
 modres.sh
-server-data.db
+discord-data.db
+irc-prefrences.db
