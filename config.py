@@ -44,8 +44,7 @@ npbase: str = (
 su = "^(su|sudo|(su .*|sudo .*))$"
 servers: dict[str, dict[str, Any]] = {
     "ircnow": {
-        "address": "127.0.0.1",
-        "port": 6601,
+        "address": "irc.freeirc.org",
         "interval": 200,
         "pass": env["ircnow_pass"],
         "channels": {"#random": 0, "#dice": 0, "#offtopic": 0, "#main/replirc": 0},
@@ -99,7 +98,7 @@ servers: dict[str, dict[str, Any]] = {
     "twitch": {
         "nick": "fireschatbot",
         "address": "irc.chat.twitch.tv",
-        "serverPass": env["twitch_pass"],
+        "serverPass": "oauth:" + env["twitch_pass"],
         "channels": {
             "#firepup650": 0,
         },

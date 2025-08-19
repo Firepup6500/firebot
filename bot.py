@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # pylint: disable=missing-module-docstring,missing-function-docstring,missing-class-docstring,too-many-instance-attributes,broad-exception-caught,redefined-builtin
-from socket import socket, AF_INET, SOCK_STREAM
+from socket import socket, AF_INET, SOCK_STREAM, SHUT_RDWR
 from sys import exit
 from typing import NoReturn, Union
 from time import sleep
@@ -107,8 +107,8 @@ class bot(bare.bot):
                 self.send(cmd + "\n")
         if "serverPass" in conf.servers[self.server]:
             self.send(f"PASS {conf.servers[self.server]['serverPass']}\n")
-        self.send(f"USER {self.nick} {self.nick} {self.nick} {self.nick}\n")
         self.send(f"NICK {self.nick}\n")
+        self.send(f"USER {self.nick} {self.nick} {self.nick} {self.nick}\n")
         ircmsg = ""
         while True:
             ircmsg = self.recv().safe_decode()
@@ -261,6 +261,15 @@ class bot(bare.bot):
 
     def exit(self, message: str) -> NoReturn:
         logs.log(message, self.server, "EXIT")
+        logs.log("Cleaning up asyncio before ternmination", self.server, "EXIT")
+        loop = conf.loop
+        if not loop.is_closed():
+            loop.run_until_complete(loop.shutdown_asyncgens())
+            loop.close()
+        logs.log("Cleaning up socket before termination", self.server, "EXIT")
+        self.sock.shutdown(SHUT_RDWR)
+        self.sock.close()
+        logs.log("Terminating.", self.server, "EXIT")
         exit(1)
 
     def msg(self, msg: str, target: str) -> None:
