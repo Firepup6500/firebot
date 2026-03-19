@@ -346,7 +346,7 @@ async def get_setting(ctx: Context, setting: str = None) -> None:
             elif setting_name.endswith("_role"):
                 val = ctx.guild.get_role(int(value))
                 value = val.mention
-            resp = resp + f"\n\- {setting_name} = {value}"
+            resp = resp + f"\n\\- {setting_name} = {value}"
         await ctx.send(resp, allowed_mentions=discord.AllowedMentions.none())
         return
     if setting not in valid_settings:

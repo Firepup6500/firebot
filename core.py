@@ -11,18 +11,19 @@ def launch(server: str) -> Popen:
         proc.wait()
 
 
-def launch_discord() -> Popen:
-    with Popen(["python3", "-u", "discord_.py"]) as proc:
+def launchDiscord() -> Popen:
+    with Popen(["python3", "-u", "discordBot.py"]) as proc:
         proc.wait()
 
 
 servers = {
     "ircnow": {"noWrap": True, "func": launch, "args": ["ircnow"]},
-    "fireirc": {"noWrap": True, "func": launch, "args": ["fireirc"]},
+    "libera": {"noWrap": True, "func": launch, "args": ["libera"]},
+    #    "fireirc": {"noWrap": True, "func": launch, "args": ["fireirc"]},
     #    "efnet": {"noWrap": True, "func": launch, "args": ["efnet"]},
     #    "backupbox": {"noWrap": True, "func": launch, "args": ["backupbox"]},
     #    "twitch": {"noWrap": True, "func": launch, "args": ["twitch"]},
-    "discord": {"noWrap": True, "func": launch_discord, "args": []},
+    "discord": {"noWrap": True, "func": launchDiscord, "args": []},
 }
 
 

@@ -3,7 +3,7 @@ from discord.ext.commands import Context, check
 from .exceptions import NotReady, NotServerOwner, NotServerAdmin
 
 
-def is_ready():
+def isReady():
     def predicate(ctx: Context):
         if ctx.bot.init:
             return True
@@ -12,7 +12,7 @@ def is_ready():
     return check(predicate)
 
 
-def is_server_owner():
+def isServerOwner():
     def predicate(ctx: Context):
         if ctx.author.id in ctx.bot.owner_ids or ctx.author == ctx.guild.owner:
             return True
@@ -21,7 +21,7 @@ def is_server_owner():
     return check(predicate)
 
 
-def is_server_admin():
+def isServerAdmin():
     def predicate(ctx: Context):
         if (
             ctx.author.id in ctx.bot.owner_ids

@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# pylint: disable=unused-argument,missing-module-docstring,missing-function-docstring,missing-class-docstring,redefined-builtin
+# pylint: disable=unused-argument,missing-module-docstring,missing-function-docstring,missing-class-docstring,redefined-builtin,invalid-name
 from socket import socket
 from typing import NoReturn, Union
 from pylast import LastFMNetwork

@@ -55,9 +55,14 @@ servers: dict[str, dict[str, Any]] = {
     "efnet": {
         "address": "irc.underworld.no",
         "channels": {"#random": 0, "#dice": 0},
-        "hosts": ["154.sub-174-251-241.myvzw.com"],
         "threads": ["pingMon"],
         "dnsblMode": "kickban",
+    },
+    "libera": {
+        "address": "irc.libera.chat",
+        "pass": env["libera_pass"],
+        "channels": {"#random": 0, "#dice": 0},
+        "dnsblMode": "kickban"
     },
     "fireirc": {
         "address": "127.0.0.1",
@@ -72,11 +77,9 @@ servers: dict[str, dict[str, Any]] = {
             "#firemc": 0,
             "#fp-radio": 0,
             "#fp-radio-debug": 0,
-            "#hardfork": 0,
             "#opers": 0,
         },
         "ignores": ["#fp-radio"],
-        "admins": [],
         "hosts": ["owner.irc.firepup650.com"],
         "threads": ["radio"],
         "autoMethod": "MARKOV",
@@ -87,11 +90,6 @@ servers: dict[str, dict[str, Any]] = {
         "port": 6607,
         "channels": {"#default": 0, "#botrebellion": 0, "#main/replirc": 0},
         "ignores": ["#main/replirc"],
-        "hosts": [
-            "172.20.171.225",
-            "169.254.253.107",
-            "2600-6c5a-637f-1a85-0000-0000-0000-6667.inf6.spectrum.com",
-        ],
         "onIdntCmds": ["OPER e e"],
         "dnsbl-mode": "gline",
     },

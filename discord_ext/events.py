@@ -1,4 +1,4 @@
-# pylint: disable=missing-module-docstring,missing-function-docstring,unused-argument
+# pylint: disable=missing-module-docstring,missing-function-docstring,unused-argument,invalid-name
 import traceback, logging
 import discord
 from discord.ext import commands

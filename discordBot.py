@@ -22,15 +22,16 @@ warnings.filterwarnings("ignore", category=DeprecationWarning, module=r"discord\
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 logging.getLogger("discord.http").setLevel(logging.INFO)
+logging.getLogger("discord.client").setLevel(logging.INFO)
 logging.getLogger("discord.gateway").setLevel(logging.INFO)
 logging.getLogger("discord_ext").setLevel(logging.DEBUG)
 discord.utils.setup_logging(level=logging.DEBUG, root=False)
 bot = Bot(command_prefix="!", intents=discord.Intents.all(), help_command=None)
 with open("mastermessages.txt", encoding="utf-8") as f:
-    TMFeed = []
+    _TMFeed = []
     for line in f.readlines():
-        TMFeed.extend([line.strip().split()])
-    bot.markov = MarkovBot(TMFeed)
+        _TMFeed.extend([line.strip().split()])
+    bot.markov = MarkovBot(_TMFeed)
 bot.init = False
 logger.addHandler(shared.handler)
 bot.logger = logger
@@ -39,7 +40,7 @@ bot.lastfmLink = conf.lastfmLink
 bot.database = asyncSql("discord-data.db")
 
 
-async def maybe_defer(ctx: Context):
+async def maybeDefer(ctx: Context):
     if (
         ctx.interaction
         and not ctx.interaction.response.is_done()
@@ -48,7 +49,7 @@ async def maybe_defer(ctx: Context):
         await ctx.interaction.response.defer()
 
 
-bot.before_invoke(maybe_defer)
+bot.before_invoke(maybeDefer)
 
 events.register_events(bot, env)
 utils.register_commands(bot)
@@ -58,7 +59,7 @@ utils.register_commands(bot)
     name="reload", description="Owners only - hot reload the bot from disk"
 )
 @is_owner()
-@checks.is_ready()
+@checks.isReady()
 @shared.with_typing()
 async def rel(ctx: Context):
     logger.info("Reloading")

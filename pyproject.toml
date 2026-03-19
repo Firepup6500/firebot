@@ -1,13 +1,15 @@
 [tool.poetry]
-name = "fire-ircbot"
+name = "firebot"
 version = "1.0.0"
-description = "An ircbot"
+description = "A bot that started out as an IRC bot, but is now a lot more"
 authors = ["Firepup Sixfifty <firepup650@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
 python-dotenv = "^1.0.0"
+discord = "^2.7.1"
 pylast = "^5.2.0"
+pydnsbl = "^1.1.7"
 fpsql = "^1, !=1.0.26"
 
 [tool.poetry.dev-dependencies]
