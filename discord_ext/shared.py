@@ -4,7 +4,7 @@ from functools import wraps
 from discord.utils import _ColourFormatter, stream_supports_colour
 
 
-def with_typing():
+def withTyping():
     def decorator(func):
         @wraps(func)
         async def wrapper(ctx, *args, **kwargs):

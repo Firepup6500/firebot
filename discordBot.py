@@ -60,7 +60,7 @@ utils.registerCommands(bot)
 )
 @is_owner()
 @checks.isReady()
-@shared.with_typing()
+@shared.withTyping()
 async def rel(ctx: Context):
     logger.info("Reloading")
     # pylint: disable=broad-exception-caught

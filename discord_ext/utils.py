@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord.app_commands import describe
 from .commands import data_discord, call_discord
 from .checks import isReady, isServerOwner, isServerAdmin
-from .shared import handler, with_typing
+from .shared import handler, withTyping
 
 logger = logging.getLogger(__name__)
 logger.addHandler(handler)
@@ -18,7 +18,7 @@ def registerCommands(bot):
             bot.hybrid_command(name=name, description=data_discord[name]["desc"])(
                 commands.is_owner()(
                     isReady()(
-                        describe(**data_discord[name]["params"])(with_typing()(func))
+                        describe(**data_discord[name]["params"])(withTyping()(func))
                     )
                 )
             )
@@ -28,7 +28,7 @@ def registerCommands(bot):
                     commands.is_owner()(
                         isReady()(
                             describe(**data_discord[name]["params"])(
-                                with_typing()(func)
+                                withTyping()(func)
                             )
                         )
                     )
@@ -37,7 +37,7 @@ def registerCommands(bot):
             bot.hybrid_command(name=name, description=data_discord[name]["desc"])(
                 isServerOwner()(
                     isReady()(
-                        describe(**data_discord[name]["params"])(with_typing()(func))
+                        describe(**data_discord[name]["params"])(withTyping()(func))
                     )
                 )
             )
@@ -47,7 +47,7 @@ def registerCommands(bot):
                     isServerOwner()(
                         isReady()(
                             describe(**data_discord[name]["params"])(
-                                with_typing()(func)
+                                withTyping()(func)
                             )
                         )
                     )
@@ -56,7 +56,7 @@ def registerCommands(bot):
             bot.hybrid_command(name=name, description=data_discord[name]["desc"])(
                 isServerAdmin()(
                     isReady()(
-                        describe(**data_discord[name]["params"])(with_typing()(func))
+                        describe(**data_discord[name]["params"])(withTyping()(func))
                     )
                 )
             )
@@ -66,7 +66,7 @@ def registerCommands(bot):
                     isServerAdmin()(
                         isReady()(
                             describe(**data_discord[name]["params"])(
-                                with_typing()(func)
+                                withTyping()(func)
                             )
                         )
                     )
@@ -74,14 +74,14 @@ def registerCommands(bot):
         else:
             bot.hybrid_command(name=name, description=data_discord[name]["desc"])(
                 isReady()(
-                    describe(**data_discord[name]["params"])(with_typing()(func))
+                    describe(**data_discord[name]["params"])(withTyping()(func))
                 )
             )
             for _, alias in enumerate(data_discord[name]["aliases"]):
                 logger.debug("Registering command alias: %s", alias)
                 bot.hybrid_command(name=alias, description=data_discord[name]["desc"])(
                     isReady()(
-                        describe(**data_discord[name]["params"])(with_typing()(func))
+                        describe(**data_discord[name]["params"])(withTyping()(func))
                     )
                 )
     logger.info("Registered commands")
