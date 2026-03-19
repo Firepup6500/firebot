@@ -89,10 +89,10 @@ class Bot(bare.Bot):
         self.dns = {}
         self.lastfmLink = conf.lastfmLink
         with open("mastermessages.txt", encoding="utf-8") as f:
-            TMFeed = []
+            markovFeed = []
             for line in f.readlines():
-                TMFeed.extend([line.strip().split()])
-            self.markov = MarkovBot(TMFeed)
+                markovFeed.extend([line.strip().split()])
+            self.markov = MarkovBot(markovFeed)
         conf.prefix = (
             conf.servers[server]["prefix"] if "prefix" in conf.servers[server] else "."
         )
@@ -365,8 +365,8 @@ class Bot(bare.Bot):
                             reload(handlers)
                             self.msg("Reloaded successfully", chan)
                         except Exception:
-                            Err = format_exc()
-                            for line in Err.split("\n"):
+                            exception = format_exc()
+                            for line in exception.split("\n"):
                                 self.log(line, "ERROR")
                             self.msg(
                                 "Reload failed, likely partially reloaded. Please check error logs.",
