@@ -7,27 +7,28 @@ from traceback import format_exc
 from bot import Bot
 from logs import log
 
-server = args[1] if args else "UNSTABLE"
+SERVER = args[1] if args else "UNSTABLE"
 
+exception = "" # IT IS NOT A CONSTANT PYLINT
 
 if __name__ == "__main__":
-    instance = Bot(server)
+    instance = Bot(SERVER)
     try:
         instance.mainloop()
     except Exception:
-        Err = format_exc()
-        for line in Err.split("\n"):
-            log(line, server, "CRASH")
+        exception = format_exc()
+        for line in exception.split("\n"):
+            log(line, SERVER, "CRASH")
     except KeyboardInterrupt:
-        log("Recieved ^C", server, "EXIT")
-        log("Cleaning up asyncio before ternmination", server, "EXIT")
+        log("Recieved ^C", SERVER, "EXIT")
+        log("Cleaning up asyncio before ternmination", SERVER, "EXIT")
         loop = asyncio.get_event_loop()
         if not loop.is_closed():
             loop.run_until_complete(loop.shutdown_asyncgens())
             loop.close()
-        log("Cleaning up socket before termination", server, "EXIT")
+        log("Cleaning up socket before termination", SERVER, "EXIT")
         instance.sock.shutdown(SHUT_RDWR)
         instance.sock.close()
-        log("Terminating.", server, "EXIT")
+        log("Terminating.", SERVER, "EXIT")
         exit(0)
     exit(1)

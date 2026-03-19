@@ -1,10 +1,10 @@
 #!/usr/bin/python3
-# pylint: disable=missing-module-docstring,missing-function-docstring,unused-argument,redefined-builtin
+# pylint: disable=missing-module-docstring,missing-function-docstring,unused-argument
 import random as r
 from typing import Union, Callable
 from traceback import format_exc
 import re, checks, bare
-from overrides import bytes
+from utils import lazyDecode
 import config as conf, commands as cmds, utils
 
 
@@ -79,7 +79,7 @@ def PRIVMSG(bot: bare.Bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
     if chan in bot.ignores:
         return None, None
     bot.log(
-        f'Got "{bytes(message).lazy_decode()}" from "{name}" in "{chan}" ({bot.current})',
+        f'Got "{lazyDecode(message)}" from "{name}" in "{chan}" ({bot.current})',
     )
     if len(name) > bot.nicklen:
         bot.log(f"Name too long ({len(name)} > {bot.nicklen})")

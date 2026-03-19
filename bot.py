@@ -8,7 +8,6 @@ from importlib import reload
 import random as r
 from threading import Thread
 from traceback import format_exc
-from overrides import bytes, bbytes
 import commands as cmds
 import config as conf
 import utils
@@ -48,7 +47,7 @@ class Bot(bare.Bot):
             if "nick" in conf.servers[server]
             else "FireBot"
         )
-        self.queue: list[bbytes] = []  # pyright: ignore [reportInvalidTypeForm]
+        self.queue: list[bytes] = []
         self.statuses = {"firepup": {}}
         self.ops = {}
         self.sock = socket(AF_INET, SOCK_STREAM)
@@ -106,14 +105,14 @@ class Bot(bare.Bot):
         self.send(f"USER {self.nick} {self.nick} {self.nick} {self.nick}\n")
         ircmsg = ""
         while True:
-            ircmsg = self.recv().safe_decode()
+            ircmsg = utils.safeDecode(self.recv())
             if ircmsg != "":
                 code = 0
                 try:
                     code = int(ircmsg.split(" ", 2)[1].strip())
                 except (IndexError, ValueError):
                     pass
-                print(bytes(ircmsg).lazy_decode())
+                print(utils.lazyDecode(ircmsg))
                 if "NICKLEN" in ircmsg:
                     self.nicklen = int(ircmsg.split("NICKLEN=")[1].split(" ")[0])
                     self.log(f"NICKLEN set to {self.nicklen}")
@@ -158,14 +157,14 @@ class Bot(bare.Bot):
             return
         self.send(f"JOIN {chan}\n")
         while True:
-            ircmsg = self.recv().safe_decode()
+            ircmsg = utils.safeDecode(self.recv())
             if ircmsg != "":
                 code = 0
                 try:
                     code = int(ircmsg.split(" ", 2)[1].strip())
                 except (IndexError, ValueError):
                     pass
-                print(bytes(ircmsg).lazy_decode())
+                print(utils.lazyDecode(ircmsg))
                 if ircmsg.startswith("PING "):
                     self.ping(ircmsg)
                 elif ircmsg.startswith("ERROR "):
@@ -239,16 +238,16 @@ class Bot(bare.Bot):
 
     def recv(self) -> bytes:
         if self.queue:
-            return bytes(self.queue.pop(0))
-        data = bytes(self.sock.recv(2048))
-        if data.lazy_decode() == "":
+            return self.queue.pop(0)
+        data = self.sock.recv(2048)
+        if utils.lazyDecode(data) == "":
             return data
         while not data.endswith(b"\r\n"):
-            data += bytes(self.sock.recv(2048))
-        data = bytes(data.strip(b"\r\n"))
+            data += self.sock.recv(2048)
+        data = data.strip(b"\r\n")
         if b"\r\n" in data:
             self.queue.extend(data.split(b"\r\n"))
-            return bytes(self.queue.pop(0))
+            return self.queue.pop(0)
         return data
 
     def log(self, message: str, level: str = "LOG") -> None:
@@ -269,7 +268,7 @@ class Bot(bare.Bot):
 
     def msg(self, msg: str, target: str) -> None:
         if not (target == "NickServ" and utils.mfind(msg, ["IDENTIFY"])):
-            self.log(f"Sending {bytes(msg).lazy_decode()} to {target}")
+            self.log(f"Sending {utils.lazyDecode(msg)} to {target}")
         else:
             self.log("Identifying myself...")
         self.send(f"PRIVMSG {target} :{msg}\n")
@@ -282,7 +281,7 @@ class Bot(bare.Bot):
 
     def notice(self, msg: str, target: str, silent: bool = False) -> int:
         if not silent:
-            self.log(f"Sending {bytes(msg).lazy_decode()} to {target} (NOTICE)")
+            self.log(f"Sending {utils.lazyDecode(msg)} to {target} (NOTICE)")
         return self.send(f"NOTICE {target} :{msg}\n")
 
     def sendraw(self, command: str) -> int:
@@ -318,11 +317,11 @@ class Bot(bare.Bot):
             tMgr.start()
         while 1:
             raw = self.recv()
-            ircmsg = raw.safe_decode()
+            ircmsg = utils.safeDecode(raw)
             if ircmsg == "":
                 self.exit("Probably a netsplit")
             else:
-                print(raw.lazy_decode(), sep="\n")
+                print(utils.lazyDecode(raw), sep="\n")
                 action = "Unknown"
                 try:
                     action = ircmsg.split(" ", 2)[1].strip()

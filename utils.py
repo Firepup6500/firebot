@@ -1,6 +1,6 @@
 # pylint: disable=missing-module-docstring,missing-function-docstring
 import codecs
-from typing import Optional
+from typing import Optional, Union
 import bare
 from config import ESCAPE_SEQUENCE_RE, ipbl, hsbl, hardbl, IRC_ESCAPE_CODES
 
@@ -139,3 +139,17 @@ def dnsblHandler(
                 case _:
                     bot.log(f'Unknown dnsbl Mode "{bot.dnsblMode}"!', "WARN")
     return dnsblStatus, dnsblResps
+
+
+def lazyDecode(data: bytes) -> str:
+    'Lazily "decode" the provided bytes object using string manipulation'
+    return str(data)[2:-1]
+
+
+def safeDecode(data: bytes) -> str:
+    'Calls data.decode(errors = "ignore"), if that errors, return the literal string "nul"'
+    try:
+        return data.decode(errors = "ignore")
+    except TypeError:
+        print("panik - invalid UTF-8")
+        return "nul"

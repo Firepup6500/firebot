@@ -1,9 +1,8 @@
 #!/usr/bin/python3
-# pylint: disable=unused-argument,missing-module-docstring,missing-function-docstring,missing-class-docstring,redefined-builtin,invalid-name
+# pylint: disable=unused-argument,missing-module-docstring,missing-function-docstring,missing-class-docstring,invalid-name
 from socket import socket
 from typing import NoReturn, Union
 from pylast import LastFMNetwork
-from overrides import bytes, bbytes
 from markov import MarkovBot
 
 logs = ...
@@ -28,7 +27,7 @@ class Bot:
     __version__: str
     nick: str
     adminnames: list[str]
-    queue: list[bbytes]  # pyright: ignore [reportInvalidTypeForm]
+    queue: list[bytes]
     sock: socket
     npallowed: list[str]
     current: str
