@@ -23,7 +23,7 @@ def admin(
         return False
     if (
         name.lower() in bot.adminnames
-        or (host or bot.tmpHost) in conf.admin_hosts
+        or (host or bot.tmpHost) in conf.GLOBAL_ADMIN_HOSTS
         or (host or bot.tmpHost) in conf.servers[bot.server]["hosts"]
     ):
         if bot.current != "bridge":

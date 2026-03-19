@@ -440,13 +440,13 @@ data: dict[str, dict[str, Any]] = {
     "good night": {"prefix": False, "aliases": ["g'night", "night"]},
     "good afternoon": {"prefix": False, "aliases": ["g'afternoon", "afternoon"]},
 }
-regexes: list[str] = [conf.npbase, conf.su]
+regexes: list[str] = [conf.NOWPLAYING_REGEX, conf.SUDO_REGEX]
 call: dict[str, Callable[[bare.Bot, str, str, str], None]] = {
     "!botlist": botlist,
     "bugs bugs bugs": bugs,
     "hi $BOTNICK": hi,
-    conf.npbase: nowplaying,
-    conf.su: sudo,
+    conf.NOWPLAYING_REGEX: nowplaying,
+    conf.SUDO_REGEX: sudo,
     "restart": reboot,
     "uptime": uptime,
     "raw": raw,

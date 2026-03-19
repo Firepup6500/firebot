@@ -2,7 +2,7 @@
 import codecs
 from typing import Optional
 import bare
-from config import ESCAPE_SEQUENCE_RE, prefix, ipbl, hsbl, hardbl, IRC_ESCAPE_CODES
+from config import ESCAPE_SEQUENCE_RE, ipbl, hsbl, hardbl, IRC_ESCAPE_CODES
 
 
 def replace_irc(s: str) -> str:
@@ -25,11 +25,11 @@ def decode_escapes(s: str, replaceControls=False) -> str:
     return s
 
 
-def cmdFind(message: str, find: list, usePrefix: bool = True) -> bool:
+def cmdFind(message: str, find: list, prefix: Union[None, str] = None) -> bool:
     cmd = message.split(" ")
     if not cmd:
         return False
-    if usePrefix:
+    if prefix:
         for match in find:
             sMatch = (prefix + match).split(" ")
             try:
@@ -48,8 +48,8 @@ def cmdFind(message: str, find: list, usePrefix: bool = True) -> bool:
     return False
 
 
-def mfind(message: str, find: list, usePrefix: bool = True) -> bool:
-    if usePrefix:
+def mfind(message: str, find: list, prefix: Union[None, str] = None) -> bool:
+    if prefix:
         return any(message[: len(match) + 1] == prefix + match for match in find)
     return any(message[: len(match)] == match for match in find)
 

@@ -8,7 +8,7 @@ from pydnsbl import DNSBLIpChecker, DNSBLDomainChecker, providers as BL
 import pylast
 
 
-class droneBL(BL.Provider):
+class DroneBl(BL.Provider):
     def process_response(self, response):
         reasons = set()
         for result in response:
@@ -27,7 +27,7 @@ class droneBL(BL.Provider):
         return reasons
 
 
-providers = BL.BASE_PROVIDERS + [droneBL("dnsbl.dronebl.org")]
+providers = BL.BASE_PROVIDERS + [DroneBl("dnsbl.dronebl.org")]
 
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
@@ -38,10 +38,10 @@ hardbl: list[str] = ["146.70.59.36"]
 
 load_dotenv()
 __version__ = "v3.0.26"
-npbase: str = (
+NOWPLAYING_REGEX: str = (
     "\\[\x0303last\\.fm\x03\\] [A-Za-z0-9_[\\]{}\\|\\-^]{1,$MAX} (is listening|last listened) to: \x02.+ - .*\x02( \\([0-9]+ plays\\)( \\[.*\\])?)?"
 )
-su = "^(su|sudo|(su .*|sudo .*))$"
+SUDO_REGEX = "^(su|sudo|(su .*|sudo .*))$"
 servers: dict[str, dict[str, Any]] = {
     "ircnow": {
         "address": "irc.freeirc.org",
@@ -104,7 +104,7 @@ servers: dict[str, dict[str, Any]] = {
         "prefix": "!",
     },
 }
-admin_hosts: list[str] = ["firepup.firepi", "69.8.95.218"]
+GLOBAL_ADMIN_HOSTS: list[str] = ["firepup.firepi", "69.8.95.218"]
 noAdmins = ["ircnow", "backupbox"]
 ESCAPE_SEQUENCE_RE = re.compile(
     r"""
@@ -118,6 +118,6 @@ ESCAPE_SEQUENCE_RE = re.compile(
     re.UNICODE | re.VERBOSE,
 )
 IRC_ESCAPE_CODES = [0x02, 0x1F, 0x16, 0x1D, 0x1E, 0x0F, 0x03, 0x07, 0x1B, 0x11]
-prefix = "."
+DEFAULT_PREFIX = "."
 lastfmLink = pylast.LastFMNetwork(env["FM_KEY"], env["FM_SECRET"])
 npallowed: list[str] = ["FireBitBot"]

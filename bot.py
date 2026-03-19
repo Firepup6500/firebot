@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# pylint: disable=missing-module-docstring,missing-function-docstring,missing-class-docstring,too-many-instance-attributes,broad-exception-caught,redefined-builtin
+# pylint: disable=missing-module-docstring,missing-class-docstring,too-many-instance-attributes,broad-exception-caught,redefined-builtin
 from socket import socket, AF_INET, SOCK_STREAM, SHUT_RDWR
 from sys import exit
 from typing import NoReturn, Union
@@ -11,17 +11,12 @@ from traceback import format_exc
 from overrides import bytes, bbytes
 import commands as cmds
 import config as conf
+import utils
 import threads
 import logs
 import handlers
 import bare
 from markov import MarkovBot
-
-
-def mfind(message: str, find: list, usePrefix: bool = True) -> bool:
-    if usePrefix:
-        return any(message[: len(match) + 1] == conf.prefix + match for match in find)
-    return any(message[: len(match)] == match for match in find)
 
 
 class Bot(bare.Bot):
@@ -93,8 +88,8 @@ class Bot(bare.Bot):
             for line in f.readlines():
                 markovFeed.extend([line.strip().split()])
             self.markov = MarkovBot(markovFeed)
-        conf.prefix = (
-            conf.servers[server]["prefix"] if "prefix" in conf.servers[server] else "."
+        self.prefix = (
+            conf.servers[server]["prefix"] if "prefix" in conf.servers[server] else conf.DEFAULT_PREFIX
         )
         self.log(f"Start init for {self.server}")
 
@@ -273,7 +268,7 @@ class Bot(bare.Bot):
         exit(1)
 
     def msg(self, msg: str, target: str) -> None:
-        if not (target == "NickServ" and mfind(msg, ["IDENTIFY"], False)):
+        if not (target == "NickServ" and utils.mfind(msg, ["IDENTIFY"])):
             self.log(f"Sending {bytes(msg).lazy_decode()} to {target}")
         else:
             self.log("Identifying myself...")
@@ -339,6 +334,7 @@ class Bot(bare.Bot):
                     if res == "reload" and isinstance(chan, str):
                         try:
                             reload(conf)
+                            reload(utils)
                             self.adminnames = (
                                 conf.servers[self.server]["admins"]
                                 if "admins" in conf.servers[self.server]
@@ -356,10 +352,10 @@ class Bot(bare.Bot):
                                 if "interval" in conf.servers[self.server]
                                 else 50
                             )
-                            conf.prefix = (
+                            self.prefix = (
                                 conf.servers[self.server]["prefix"]
                                 if "prefix" in conf.servers[self.server]
-                                else "."
+                                else conf.DEFAULT_PREFIX
                             )
                             reload(cmds)
                             reload(handlers)

@@ -106,7 +106,7 @@ def PRIVMSG(bot: bare.Bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
         if utils.cmdFind(
             utils.sub(message, bot, chan, name).lower(),
             triggers,
-            data["prefix"],
+            bot.prefix if data["prefix"] else None,
         ):
             # pylint: disable=broad-exception-caught
             if "check" in data and data["check"]:
@@ -143,7 +143,7 @@ def PRIVMSG(bot: bare.Bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
                 cmds.call[check](bot, chan, name, message)
                 handled = True
                 break
-    if not handled and utils.cmdFind(message, ["reload", "r"]):
+    if not handled and utils.cmdFind(message, ["reload", "r"], bot.prefix):
         if checks.admin(bot, name, host, chan, "reload"):
             return "reload", chan
         handled = True
