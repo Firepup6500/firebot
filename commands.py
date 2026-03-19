@@ -3,6 +3,7 @@
 from subprocess import run, PIPE
 import random as r
 from typing import Any, Callable
+from traceback import format_exc
 import re
 import checks, bare, config as conf, utils
 
@@ -154,14 +155,14 @@ def eball(bot: bare.Bot, chan: str, name: str, message: str) -> None:
 
 
 def debug(bot: bare.Bot, chan: str, name: str, message: str) -> None:
-    dbg_out = {
+    debugOutput = {
         "VERSION": bot.__version__ + " (IRC)",
         "NICKLEN": bot.nicklen,
         "NICK": bot.nick,
         "ADMINS": str(bot.adminnames) + " (Does not include hostname checks)",
         "CHANNELS": bot.channels,
     }
-    bot.msg(f"[DEBUG] {dbg_out}", chan)
+    bot.msg(f"[DEBUG] {debugOutput}", chan)
 
 
 def debugInternal(bot: bare.Bot, chan: str, name: str, message: str) -> None:
@@ -181,8 +182,9 @@ def debugEval(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     # pylint: disable=broad-exception-caught,eval-used
     try:
         bot.msg(str(eval(message.split(" ", 1)[1])), chan)
-    except Exception as E:
-        bot.msg(f"Exception: {E}", chan)
+    except Exception:
+        exception = format_exec().split("\n")
+        bot.msg(f"Exception: {exception}", chan)
 
 
 def raw(bot: bare.Bot, chan: str, name: str, message: str) -> None:
@@ -217,12 +219,14 @@ def fmpull(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     song = None
     try:
         song = bot.lastfmLink.get_user("Firepup650").get_now_playing()
-    except Exception as E:  # TODO: Proper catch
+    except Exception:  # TODO: Proper catch
         bot.msg(
             "Sorry, the last.fm api isn't cooperating, please try again in a minute",
             chan,
         )
-        bot.log(str(E), "FATAL")
+        exception = format_exc()
+        for line in exception.split("\n"):
+            bot.log(line, "ERROR")
         return
     if song:
         bot.msg(
@@ -325,12 +329,16 @@ def check(bot: bare.Bot, chan: str, name: str, message: str) -> None:
                 f"Blacklist check: {'(Cached) ' if cache else ''}{dnsbl if dnsbl else 'Safe.'} ({raws})",
                 chan,
             )
-        except Exception as E:
+        except Exception:
             bot.msg("Blacklist Lookup Failed. Error recorded to bot logs.", chan)
-            bot.log(str(E), "FATAL")
-    except Exception as E:
+            exception = format_exc()
+            for line in exception.split("\n"):
+                bot.log(line, "ERROR")
+    except Exception:
         bot.msg("Blacklist lookup failed. Error recorded to bot logs.", chan)
-        bot.log(str(E), "FATAL")
+        exception = format_exc()
+        for line in exception.split("\n"):
+            bot.log(line, "ERROR")
 
 
 def slap(bot: bare.Bot, chan: str, name: str, message: str) -> None:
