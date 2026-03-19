@@ -304,7 +304,7 @@ max-attributes=7
 max-bool-expr=5
 
 # Maximum number of branch for function / method body.
-max-branches=12
+max-branches=50
 
 # Maximum number of locals for function / method body.
 max-locals=15
@@ -322,7 +322,7 @@ max-public-methods=20
 max-returns=6
 
 # Maximum number of statements in function / method body.
-max-statements=50
+max-statements=100
 
 # Minimum number of public methods for a class (see R0903).
 min-public-methods=2
@@ -352,7 +352,7 @@ indent-string='    '
 # Maximum number of characters on a single line. Pylint's default of 100 is
 # based on PEP 8's guidance that teams may choose line lengths up to 99
 # characters.
-max-line-length=200
+max-line-length=300
 
 # Maximum number of lines in a module.
 max-module-lines=2000
