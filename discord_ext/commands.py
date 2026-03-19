@@ -7,7 +7,7 @@ from typing import Any, Callable
 from urllib.parse import unquote
 import discord
 from discord.ext.commands import Context
-from utils import decode_escapes
+from utils import decodeEscapes
 from .shared import handler
 
 logger = logging.getLogger(__name__)
@@ -97,7 +97,7 @@ async def quote_discord(ctx: Context, *, regex: str = "") -> None:
             q = ["Sorry, your query is invalid regex. Please try again."]
         if not q:
             q = [f'No results for "{regex}" ']
-        sel = decode_escapes(
+        sel = decodeEscapes(
             r.sample(q, 1)[0]
             .replace("\\n", "")
             .replace("\n", "")

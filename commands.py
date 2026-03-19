@@ -133,7 +133,7 @@ def quote(bot: bare.Bot, chan: str, name: str, message: str) -> None:
             q = ["Sorry, your query is invalid regex. Please try again."]
         if not q:
             q = [f'No results for "{query}" ']
-        sel = utils.decode_escapes(
+        sel = utils.decodeEscapes(
             r.sample(q, 1)[0].replace("\\n", "").replace("\n", "")
         )
         bot.msg(sel, chan)

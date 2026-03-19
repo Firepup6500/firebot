@@ -163,7 +163,7 @@ def PRIVMSG(bot: bare.Bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
         if bot.autoMethod == "QUOTE":
             r.seed()
             with open("mastermessages.txt", "r", encoding="utf-8") as mm:
-                sel = utils.decode_escapes(
+                sel = utils.decodeEscapes(
                     r.sample(mm.readlines(), 1)[0].replace("\\n", "").replace("\n", "")
                 )
         else:

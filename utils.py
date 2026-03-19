@@ -5,22 +5,22 @@ import bare
 from config import ESCAPE_SEQUENCE_RE, ipbl, hsbl, hardbl, IRC_ESCAPE_CODES
 
 
-def replace_irc(s: str) -> str:
+def replaceIrc(s: str) -> str:
     for code in IRC_ESCAPE_CODES:
         s = s.replace(chr(code), f"\\x{code:02x}")
     return s
 
 
-def decode_escapes(s: str, replaceControls=False) -> str:
+def decodeEscapes(s: str, replaceControls=False) -> str:
     s = s.replace("\n", "").replace("\\n", "")
 
-    def decode_match(match):
+    def decodeMatch(match):
         return codecs.decode(match.group(0), "unicode-escape")
 
-    s = ESCAPE_SEQUENCE_RE.sub(decode_match, s)
+    s = ESCAPE_SEQUENCE_RE.sub(decodeMatch, s)
 
     if replaceControls:
-        s = replace_irc(s)
+        s = replaceIrc(s)
 
     return s
 
