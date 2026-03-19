@@ -51,8 +51,8 @@ async def maybeDefer(ctx: Context):
 
 bot.before_invoke(maybeDefer)
 
-events.register_events(bot, env)
-utils.register_commands(bot)
+events.registerEvents(bot, env)
+utils.registerCommands(bot)
 
 
 @bot.hybrid_command(
@@ -76,9 +76,9 @@ async def rel(ctx: Context):
         logger.debug("Reloaded components")
         bot.__version__ = conf.__version__
         bot.lastfmLink = conf.lastfmLink
-        events.register_events(bot, env)
-        utils.deregister_commands(bot)
-        utils.register_commands(bot)
+        events.registerEvents(bot, env)
+        utils.deregisterCommands(bot)
+        utils.registerCommands(bot)
         logger.debug("Syncing commands")
         await bot.tree.sync()
         bot.init = True

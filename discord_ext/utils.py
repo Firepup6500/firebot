@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 logger.addHandler(handler)
 
 
-def register_commands(bot):
+def registerCommands(bot):
     logger.info("Registering commands")
     for name, func in call_discord.items():
         logger.debug("Registering command main : %s", name)
@@ -87,7 +87,7 @@ def register_commands(bot):
     logger.info("Registered commands")
 
 
-def deregister_commands(bot):
+def deregisterCommands(bot):
     logger.info("Deregistering commands")
     for name in call_discord:
         if bot.get_command(name):

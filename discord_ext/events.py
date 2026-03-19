@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 logger.addHandler(handler)
 
 
-def register_events(bot, env):
+def registerEvents(bot, env):
     @bot.event
     async def on_ready():
         logger.debug("Almost ready")
