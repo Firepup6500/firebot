@@ -6,8 +6,8 @@ from logs import log
 from threads import threadManager
 
 
-def launch(server: str) -> Popen:
-    with Popen(["python3", "-u", "ircbot.py", server]) as proc:
+def launchIrc(server: str) -> Popen:
+    with Popen(["python3", "-u", "ircBot.py", server]) as proc:
         proc.wait()
 
 
@@ -17,12 +17,12 @@ def launchDiscord() -> Popen:
 
 
 servers = {
-    "ircnow": {"noWrap": True, "func": launch, "args": ["ircnow"]},
-    "libera": {"noWrap": True, "func": launch, "args": ["libera"]},
-    #    "fireirc": {"noWrap": True, "func": launch, "args": ["fireirc"]},
-    #    "efnet": {"noWrap": True, "func": launch, "args": ["efnet"]},
-    #    "backupbox": {"noWrap": True, "func": launch, "args": ["backupbox"]},
-    #    "twitch": {"noWrap": True, "func": launch, "args": ["twitch"]},
+    "ircnow": {"noWrap": True, "func": launchIrc, "args": ["ircnow"]},
+    "libera": {"noWrap": True, "func": launchIrc, "args": ["libera"]},
+    #    "fireirc": {"noWrap": True, "func": launchIrc, "args": ["fireirc"]},
+    #    "efnet": {"noWrap": True, "func": launchIrc, "args": ["efnet"]},
+    #    "backupbox": {"noWrap": True, "func": launchIrc, "args": ["backupbox"]},
+    #    "twitch": {"noWrap": True, "func": launchIrc, "args": ["twitch"]},
     "discord": {"noWrap": True, "func": launchDiscord, "args": []},
 }
 
