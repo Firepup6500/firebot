@@ -9,39 +9,39 @@ import bare
 from logs import log
 
 
-def is_dead(thr: Thread) -> bool:
+def isDead(thr: Thread) -> bool:
     thr.join(timeout=0)
     return not thr.is_alive()
 
 
-def threadWrapper(data: dict) -> NoReturn:
+def threadWrapper(threadData: dict) -> NoReturn:
     # pylint: disable=broad-exception-caught
-    if not data["noWrap"]:
+    if not threadData["noWrap"]:
         while 1:
-            if data["ignoreErrors"]:
+            if threadData["ignoreErrors"]:
                 try:
-                    data["func"](*data["args"])
+                    threadData["func"](*threadData["args"])
                 except Exception:
-                    Err = format_exc()
-                    for line in Err.split("\n"):
+                    exception = format_exc()
+                    for line in exception.split("\n"):
                         log(line, "Thread", "WARN")
             else:
                 try:
-                    data["func"](*data["args"])
+                    threadData["func"](*threadData["args"])
                 except Exception:
-                    Err = format_exc()
-                    for line in Err.split("\n"):
+                    exception = format_exc()
+                    for line in exception.split("\n"):
                         log(line, "Thread", "CRASH")
                     exit(1)
-            sleep(data["interval"])
+            sleep(threadData["interval"])
         log("Threaded loop broken", "Thread", "FATAL")
     else:
-        data["func"](*data["args"])
+        threadData["func"](*threadData["args"])
     exit(1)
 
 
-def startThread(data: dict) -> Thread:
-    t = Thread(target=threadWrapper, args=(data,))
+def startThread(threadData: dict) -> Thread:
+    t = Thread(target=threadWrapper, args=(threadData,))
     t.daemon = True
     t.start()
     return t
@@ -57,8 +57,8 @@ def threadManager(
         log("Begin init of thread manager", mgr)
     running = {}
     for name in threads:
-        data = threads[name]
-        running[name] = startThread(data)
+        threadData = threads[name]
+        running[name] = startThread(threadData)
     if output:
         log("All threads running, starting checkup loop", mgr)
     while 1:
@@ -66,11 +66,11 @@ def threadManager(
         if output:
             log("Checking threads", mgr)
         for name, t in running.items():
-            if is_dead(t):
+            if isDead(t):
                 if output:
                     log(f"Thread {name} has died, restarting", mgr, "WARN")
-                data = threads[name]
-                running[name] = startThread(data)
+                threadData = threads[name]
+                running[name] = startThread(threadData)
     log("Thread manager loop broken", mgr, "FATAL")
     exit(1)
 
@@ -130,8 +130,8 @@ def radio(instance: bare.Bot) -> NoReturn:
                 complained = True
                 lastTrack = "null"
         except Exception:
-            Err = format_exc()
-            for line in Err.split("\n"):
+            exception = format_exc()
+            for line in exception.split("\n"):
                 instance.log(line, "WARN")
         if debug:
             instance.msg(
