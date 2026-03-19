@@ -183,7 +183,7 @@ def debugEval(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     try:
         bot.msg(str(eval(message.split(" ", 1)[1])), chan)
     except Exception:
-        exception = format_exec().split("\n")
+        exception = format_exc().split("\n")
         bot.msg(f"Exception: {exception}", chan)
 
 
