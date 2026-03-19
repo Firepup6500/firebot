@@ -6,7 +6,7 @@ import config as conf
 
 
 def admin(
-    bot: bare.bot,
+    bot: bare.Bot,
     name: str,
     host: Optional[str] = "",
     chan: Optional[str] = "",

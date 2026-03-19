@@ -8,7 +8,7 @@ from overrides import bytes
 import config as conf, commands as cmds, utils
 
 
-def CTCP(bot: bare.bot, msg: str) -> bool:
+def CTCP(bot: bare.Bot, msg: str) -> bool:
     sender = msg.split("!", 1)[0][1:]
     kind = msg.split("\x01")[1].split(" ", 1)[0]
     bot.log(f'Responding to CTCP "{kind}" from {sender}')
@@ -41,7 +41,7 @@ def CTCP(bot: bare.bot, msg: str) -> bool:
     return False
 
 
-def PRIVMSG(bot: bare.bot, msg: str) -> Union[tuple[None, None], tuple[str, str]]:
+def PRIVMSG(bot: bare.Bot, msg: str) -> Union[tuple[None, None], tuple[str, str]]:
     # pylint: disable=too-many-locals,too-many-boolean-expressions
     # Format of ":[Nick]![ident]@[host|vhost] PRIVMSG [channel] :[message]”
     name = msg.split("!", 1)[0][1:]
@@ -172,14 +172,14 @@ def PRIVMSG(bot: bare.bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
     return None, None
 
 
-def NICK(bot: bare.bot, msg: str) -> tuple[None, None]:
+def NICK(bot: bare.Bot, msg: str) -> tuple[None, None]:
     name = msg.split("!", 1)[0][1:]
     if name == bot.nick:
         bot.nick = msg.split("NICK", 1)[1].split(":", 1)[1].strip()
     return None, None
 
 
-def KICK(bot: bare.bot, msg: str) -> tuple[None, None]:
+def KICK(bot: bare.Bot, msg: str) -> tuple[None, None]:
     important = msg.split("KICK", 1)[1].split(":", 1)[0].strip().split(" ")
     channel = important[0]
     kicked = important[1]
@@ -188,7 +188,7 @@ def KICK(bot: bare.bot, msg: str) -> tuple[None, None]:
     return None, None
 
 
-def PART(bot: bare.bot, msg: str) -> tuple[None, None]:
+def PART(bot: bare.Bot, msg: str) -> tuple[None, None]:
     parted = msg.split("!", 1)[0][1:]
     channel = msg.split("PART", 1)[1].split(":", 1)[0].strip()
     if parted == bot.nick:
@@ -196,7 +196,7 @@ def PART(bot: bare.bot, msg: str) -> tuple[None, None]:
     return None, None
 
 
-def QUIT(bot: bare.bot, msg: str) -> tuple[None, None]:
+def QUIT(bot: bare.Bot, msg: str) -> tuple[None, None]:
     if bot.server == "replirc":
         quitter = msg.split("!", 1)[0][1:]
         if quitter == "FireMCbot":
@@ -204,7 +204,7 @@ def QUIT(bot: bare.bot, msg: str) -> tuple[None, None]:
     return None, None
 
 
-def JOIN(bot: bare.bot, msg: str) -> tuple[None, None]:
+def JOIN(bot: bare.Bot, msg: str) -> tuple[None, None]:
     nick = msg.split("!", 1)[0][1:]
     hostname = msg.split("@", 1)[1].split(" ", 1)[0].strip()
     chan = msg.split("#")[-1].strip()
@@ -212,7 +212,7 @@ def JOIN(bot: bare.bot, msg: str) -> tuple[None, None]:
     return None, None
 
 
-def MODE(bot: bare.bot, msg: str) -> tuple[None, None]:
+def MODE(bot: bare.Bot, msg: str) -> tuple[None, None]:
     try:
         chan = msg.split("#", 1)[1].split(" ", 1)[0]
         add = msg.split("#", 1)[1].split(" ", 2)[1][0] == "+"
@@ -235,12 +235,12 @@ def MODE(bot: bare.bot, msg: str) -> tuple[None, None]:
     return None, None
 
 
-def NULL(bot: bare.bot, msg: str) -> tuple[None, None]:
+def NULL(bot: bare.Bot, msg: str) -> tuple[None, None]:
     return None, None
 
 
 handles: dict[
-    str, Callable[[bare.bot, str], Union[tuple[None, None], tuple[str, str]]]
+    str, Callable[[bare.Bot, str], Union[tuple[None, None], tuple[str, str]]]
 ] = {
     "PRIVMSG": PRIVMSG,
     "NICK": NICK,

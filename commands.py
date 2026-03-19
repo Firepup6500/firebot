@@ -7,61 +7,61 @@ import re
 import checks, bare, config as conf, utils
 
 
-def fpmp(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def fpmp(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.msg("Firepup's master playlist", chan)
     bot.msg("https://open.spotify.com/playlist/4ctNy3O0rOwhhXIKyLvUZM", chan)
 
 
-def fplq(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def fplq(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.msg("Firepup's listen queue", chan)
     bot.msg("https://open.spotify.com/playlist/20PLdgeBNrCC63Bufg50eK", chan)
 
 
-def fpo(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def fpo(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.msg("Firepup's obsessions playlist", chan)
     bot.msg("https://open.spotify.com/playlist/5kdR1GsT0gG6ISvskpHyMS", chan)
 
 
-def version(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def version(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.msg("Version: " + bot.__version__ + " (IRC)", chan)
 
 
-def goat(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def goat(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.log("GOAT DETECTED")
     bot.msg("Hello Goat", chan)
     bot.gmode = False
 
 
-def botlist(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def botlist(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.msg(
         f"Hi! I'm FireBot (https://git.h.hackclub.app/Firepup650/FireBot)! {'My admins on this server are' + str(bot.adminnames) + '.' if bot.adminnames else ''}",  # pyright: ignore [reportOperatorIssue]
         chan,
     )
 
 
-def bugs(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def bugs(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.msg(
         f"\x01ACTION realizes {name} looks like a bug, and squashes {name}\x01",
         chan,
     )
 
 
-def hi(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def hi(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.msg(f"Hello {name}!", chan)
 
 
-def op(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def op(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.op(name, chan)
 
 
-def ping(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def ping(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.msg(
         f"{name}: pong",
         chan,
     )
 
 
-def uptime(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def uptime(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     uptime = run(["uptime", "-p"], stdout=PIPE, check=False).stdout.decode().strip()
     bot.msg(
         f"Uptime: {uptime}",
@@ -69,14 +69,14 @@ def uptime(bot: bare.bot, chan: str, name: str, message: str) -> None:
     )
 
 
-def isAdmin(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def isAdmin(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.msg(
         f"{'Yes' if checks.admin(bot, name) else 'No'}",
         chan,
     )
 
 
-def help(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def help(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     # pylint: disable=redefined-builtin,unreachable
     helpErr = False
     category = None
@@ -105,17 +105,17 @@ def help(bot: bare.bot, chan: str, name: str, message: str) -> None:
     bot.msg("Sorry, I can't send help to bridged users.", chan)
 
 
-def goatOn(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def goatOn(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.log("GOAT DETECTION ACTIVATED")
     bot.gmode = True
 
 
-def goatOff(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def goatOff(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.log("GOAT DETECTION DEACTIVATED")
     bot.gmode = False
 
 
-def quote(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def quote(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     qfilter = ""
     query = ""
     if " " in message:
@@ -138,12 +138,12 @@ def quote(bot: bare.bot, chan: str, name: str, message: str) -> None:
         bot.msg(sel, chan)
 
 
-def join(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def join(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     newchan = message.split(" ", 1)[1].strip()
     bot.join(newchan, chan)
 
 
-def eball(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def eball(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     if message.endswith("?"):
         with open("eightball.txt", "r", encoding="utf-8") as eb:
             q = eb.readlines()
@@ -153,7 +153,7 @@ def eball(bot: bare.bot, chan: str, name: str, message: str) -> None:
         bot.msg("Please pose a Yes or No question.", chan)
 
 
-def debug(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def debug(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     dbg_out = {
         "VERSION": bot.__version__ + " (IRC)",
         "NICKLEN": bot.nicklen,
@@ -164,7 +164,7 @@ def debug(bot: bare.bot, chan: str, name: str, message: str) -> None:
     bot.msg(f"[DEBUG] {dbg_out}", chan)
 
 
-def debugInternal(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def debugInternal(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     things = dir(bot)
     try:
         thing = message.split(" ", 1)[1]
@@ -177,7 +177,7 @@ def debugInternal(bot: bare.bot, chan: str, name: str, message: str) -> None:
         bot.msg(f'I have nothing called "{thing}"', chan)
 
 
-def debugEval(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def debugEval(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     # pylint: disable=broad-exception-caught,eval-used
     try:
         bot.msg(str(eval(message.split(" ", 1)[1])), chan)
@@ -185,16 +185,16 @@ def debugEval(bot: bare.bot, chan: str, name: str, message: str) -> None:
         bot.msg(f"Exception: {E}", chan)
 
 
-def raw(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def raw(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.sendraw(message.split(" ", 1)[1])
 
 
-def reboot(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def reboot(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.send("QUIT :Rebooting\n")
     bot.exit("Reboot")
 
 
-def sudo(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def sudo(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     if checks.admin(bot, name):
         bot.msg("Operation not permitted", chan)
     elif "bot" in name.lower():
@@ -203,7 +203,7 @@ def sudo(bot: bare.bot, chan: str, name: str, message: str) -> None:
         bot.msg("sudo: a password is required", chan)
 
 
-def nowplaying(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def nowplaying(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     if name in bot.npallowed and not bot.current == "bridge":
         x02 = "\x02"
         bot.msg(
@@ -212,7 +212,7 @@ def nowplaying(bot: bare.bot, chan: str, name: str, message: str) -> None:
         )
 
 
-def fmpull(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def fmpull(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     # pylint: disable=broad-exception-caught,fixme
     song = None
     try:
@@ -233,14 +233,14 @@ def fmpull(bot: bare.bot, chan: str, name: str, message: str) -> None:
         bot.msg("Firepup650 currently has their music stopped", chan)
 
 
-def whoami(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def whoami(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.msg(
         f"I think you are {name}{' (bridge)' if bot.current == 'bridge' else '@'+bot.tmpHost}",
         chan,
     )
 
 
-def markov(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def markov(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     word = None
     if " " in message:
         word = message.split()[1]
@@ -250,7 +250,7 @@ def markov(bot: bare.bot, chan: str, name: str, message: str) -> None:
     bot.msg(proposed, chan)
 
 
-def setStatus(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def setStatus(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     user, stat, reas = ("", 0, "")
     try:
         if message.split(" ")[1] == "help":
@@ -287,7 +287,7 @@ def setStatus(bot: bare.bot, chan: str, name: str, message: str) -> None:
     bot.msg(f"Status set for '{user}'. Raw data: {bot.statuses[user]}", chan)
 
 
-def getStatus(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def getStatus(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     user = ""
     try:
         user = message.split(" ")[1]
@@ -302,7 +302,7 @@ def getStatus(bot: bare.bot, chan: str, name: str, message: str) -> None:
     )
 
 
-def check(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def check(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     # pylint: disable=broad-exception-caught
     try:
         msg = message.split(" ", 1)[1]
@@ -333,7 +333,7 @@ def check(bot: bare.bot, chan: str, name: str, message: str) -> None:
         bot.log(str(E), "FATAL")
 
 
-def slap(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def slap(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     msg = message.split(" ")
     if len(msg) > 1:
         msg = " ".join(msg[1:]).strip()
@@ -347,7 +347,7 @@ def slap(bot: bare.bot, chan: str, name: str, message: str) -> None:
     )
 
 
-def morning(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def morning(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     msg = message.split(" ")
     addresse = " ".join(msg[2:]).strip().lower()
     postfix = ""
@@ -362,7 +362,7 @@ def morning(bot: bare.bot, chan: str, name: str, message: str) -> None:
     bot.msg(f"Good morning {name}{postfix}", chan)
 
 
-def night(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def night(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     msg = message.split(" ")
     addresse = " ".join(msg[2:]).strip().lower()
     postfix = ""
@@ -377,7 +377,7 @@ def night(bot: bare.bot, chan: str, name: str, message: str) -> None:
     bot.msg(f"Good night {name}{postfix}", chan)
 
 
-def afternoon(bot: bare.bot, chan: str, name: str, message: str) -> None:
+def afternoon(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     msg = message.split(" ")
     addresse = " ".join(msg[2:]).strip().lower()
     postfix = ""
@@ -441,7 +441,7 @@ data: dict[str, dict[str, Any]] = {
     "good afternoon": {"prefix": False, "aliases": ["g'afternoon", "afternoon"]},
 }
 regexes: list[str] = [conf.npbase, conf.su]
-call: dict[str, Callable[[bare.bot, str, str, str], None]] = {
+call: dict[str, Callable[[bare.Bot, str, str, str], None]] = {
     "!botlist": botlist,
     "bugs bugs bugs": bugs,
     "hi $BOTNICK": hi,

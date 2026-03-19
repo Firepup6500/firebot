@@ -55,7 +55,7 @@ def mfind(message: str, find: list, usePrefix: bool = True) -> bool:
 
 
 def sub(
-    message: str, bot: bare.bot, chan: Optional[str] = "", name: Optional[str] = ""
+    message: str, bot: bare.Bot, chan: Optional[str] = "", name: Optional[str] = ""
 ) -> str:
     result = message.replace("$BOTNICK", bot.nick).replace("$NICK", bot.nick)
     result = result.replace("$NICKLEN", str(bot.nicklen)).replace(
@@ -94,7 +94,7 @@ def dnsbl(hostname: str) -> tuple[str, dict[str, list[str]]]:
 
 
 def dnsblHandler(
-    bot: bare.bot, nick: str, hostname: str, chan: str
+    bot: bare.Bot, nick: str, hostname: str, chan: str
 ) -> tuple[str, dict[str, list[str]]]:
     dnsblStatus = "Not enabled"
     dnsblResps = {}

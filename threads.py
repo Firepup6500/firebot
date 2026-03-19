@@ -75,7 +75,7 @@ def threadManager(
     exit(1)
 
 
-def radio(instance: bare.bot) -> NoReturn:
+def radio(instance: bare.Bot) -> NoReturn:
     # pylint: disable=broad-exception-caught
     lastTrack = ""
     complained = False
@@ -149,7 +149,7 @@ def radio(instance: bare.bot) -> NoReturn:
     exit(1)
 
 
-def ping(instance: bare.bot) -> NoReturn:
+def ping(instance: bare.Bot) -> NoReturn:
     while 1:
         instance.sendraw("PING :keepalive")
         sleep(30)

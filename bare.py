@@ -19,7 +19,7 @@ handlers = ...
 def mfind(message: str, find: list, usePrefix: bool = True) -> bool: ...
 
 
-class bot:
+class Bot:
     gmode: bool
     server: str
     nicklen: int

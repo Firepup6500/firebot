@@ -24,9 +24,9 @@ def mfind(message: str, find: list, usePrefix: bool = True) -> bool:
     return any(message[: len(match)] == match for match in find)
 
 
-class bot(bare.bot):
+class Bot(bare.Bot):
     def __init__(self, server: str):
-        bare.bot.__init__(self, server)
+        bare.Bot.__init__(self, server)
         self.gmode = False
         self.server = server
         self.nicklen = 30

@@ -4,14 +4,14 @@ import asyncio
 from socket import SHUT_RDWR
 from sys import argv as args, exit
 from traceback import format_exc
-from bot import bot
+from bot import Bot
 from logs import log
 
 server = args[1] if args else "UNSTABLE"
 
 
 if __name__ == "__main__":
-    instance = bot(server)
+    instance = Bot(server)
     try:
         instance.mainloop()
     except Exception:
