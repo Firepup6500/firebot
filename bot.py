@@ -130,7 +130,7 @@ class Bot(bare.Bot):
                 if ircmsg.startswith("PING "):
                     self.ping(ircmsg)
                 if len(ircmsg.split("\x01")) == 3:
-                    handlers.CTCP(self, ircmsg)
+                    handlers.ctcp(self, ircmsg)
                 if "Closing link" in ircmsg:
                     self.exit("Closing Link")
             else:
@@ -170,7 +170,7 @@ class Bot(bare.Bot):
                 elif ircmsg.startswith("ERROR "):
                     self.exit("Lost connection to the server while joining a channel")
                 elif len(ircmsg.split("\x01")) == 3:
-                    handlers.CTCP(self, ircmsg)
+                    handlers.ctcp(self, ircmsg)
                 elif code == 403:
                     self.log(f"Joining {chan} failed", "WARN")
                     if origin != "null":
