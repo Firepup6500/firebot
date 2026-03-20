@@ -88,7 +88,9 @@ class Bot(bare.Bot):
                 markovFeed.extend([line.strip().split()])
             self.markov = MarkovBot(markovFeed)
         self.prefix = (
-            conf.servers[server]["prefix"] if "prefix" in conf.servers[server] else conf.DEFAULT_PREFIX
+            conf.servers[server]["prefix"]
+            if "prefix" in conf.servers[server]
+            else conf.DEFAULT_PREFIX
         )
         self.log(f"Start init for {self.server}")
 

@@ -41,7 +41,9 @@ def ctcp(bot: bare.Bot, msg: str) -> bool:
     return False
 
 
-def privmsgHandler(bot: bare.Bot, msg: str) -> Union[tuple[None, None], tuple[str, str]]:
+def privmsgHandler(
+    bot: bare.Bot, msg: str
+) -> Union[tuple[None, None], tuple[str, str]]:
     # pylint: disable=too-many-locals,too-many-boolean-expressions
     # Format of ":[Nick]![ident]@[host|vhost] PRIVMSG [channel] :[message]”
     name = msg.split("!", 1)[0][1:]

@@ -9,7 +9,7 @@ from logs import log
 
 SERVER = args[1] if args else "UNSTABLE"
 
-exception = "" # IT IS NOT A CONSTANT PYLINT
+exception = ""  # IT IS NOT A CONSTANT PYLINT
 
 if __name__ == "__main__":
     instance = Bot(SERVER)

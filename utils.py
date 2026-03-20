@@ -149,7 +149,7 @@ def lazyDecode(data: bytes) -> str:
 def safeDecode(data: bytes) -> str:
     'Calls data.decode(errors = "ignore"), if that errors, return the literal string "nul"'
     try:
-        return data.decode(errors = "ignore")
+        return data.decode(errors="ignore")
     except TypeError:
         print("panik - invalid UTF-8")
         return "nul"

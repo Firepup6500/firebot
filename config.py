@@ -62,7 +62,7 @@ servers: dict[str, dict[str, Any]] = {
         "address": "irc.libera.chat",
         "pass": env["libera_pass"],
         "channels": {"#random": 0, "#dice": 0},
-        "dnsblMode": "kickban"
+        "dnsblMode": "kickban",
     },
     "fireirc": {
         "address": "127.0.0.1",

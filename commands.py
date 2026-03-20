@@ -63,7 +63,9 @@ def ping(bot: bare.Bot, chan: str, name: str, message: str) -> None:
 
 
 def uptime(bot: bare.Bot, chan: str, name: str, message: str) -> None:
-    uptimeOutput = run(["uptime", "-p"], stdout=PIPE, check=False).stdout.decode().strip()
+    uptimeOutput = (
+        run(["uptime", "-p"], stdout=PIPE, check=False).stdout.decode().strip()
+    )
     bot.msg(
         f"Uptime: {uptimeOutput}",
         chan,

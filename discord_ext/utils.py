@@ -27,9 +27,7 @@ def registerCommands(bot):
                 bot.hybrid_command(name=alias, description=dataDiscord[name]["desc"])(
                     commands.is_owner()(
                         isReady()(
-                            describe(**dataDiscord[name]["params"])(
-                                withTyping()(func)
-                            )
+                            describe(**dataDiscord[name]["params"])(withTyping()(func))
                         )
                     )
                 )
@@ -46,9 +44,7 @@ def registerCommands(bot):
                 bot.hybrid_command(name=alias, description=dataDiscord[name]["desc"])(
                     isServerOwner()(
                         isReady()(
-                            describe(**dataDiscord[name]["params"])(
-                                withTyping()(func)
-                            )
+                            describe(**dataDiscord[name]["params"])(withTyping()(func))
                         )
                     )
                 )
@@ -65,17 +61,13 @@ def registerCommands(bot):
                 bot.hybrid_command(name=alias, description=dataDiscord[name]["desc"])(
                     isServerAdmin()(
                         isReady()(
-                            describe(**dataDiscord[name]["params"])(
-                                withTyping()(func)
-                            )
+                            describe(**dataDiscord[name]["params"])(withTyping()(func))
                         )
                     )
                 )
         else:
             bot.hybrid_command(name=name, description=dataDiscord[name]["desc"])(
-                isReady()(
-                    describe(**dataDiscord[name]["params"])(withTyping()(func))
-                )
+                isReady()(describe(**dataDiscord[name]["params"])(withTyping()(func)))
             )
             for _, alias in enumerate(dataDiscord[name]["aliases"]):
                 logger.debug("Registering command alias: %s", alias)
