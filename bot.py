@@ -8,7 +8,7 @@ from importlib import reload
 import random as r
 from threading import Thread
 from traceback import format_exc
-import commands as cmds
+import ircCommands as cmds
 import config as conf
 import utils
 import threads

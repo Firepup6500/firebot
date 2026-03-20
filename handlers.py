@@ -5,7 +5,7 @@ from typing import Union, Callable
 from traceback import format_exc
 import re, checks, bare
 from utils import lazyDecode
-import config as conf, commands as cmds, utils
+import config as conf, ircCommands as cmds, utils
 
 
 def ctcp(bot: bare.Bot, msg: str) -> bool:
