@@ -4,6 +4,7 @@ import random as r
 import re, logging
 from sys import exit
 from typing import Any, Callable
+from traceback import format_exc
 from urllib.parse import unquote
 import discord
 from discord.ext.commands import Context
@@ -14,56 +15,56 @@ logger = logging.getLogger(__name__)
 logger.addHandler(handler)
 
 
-async def fpmp_discord(ctx: Context) -> None:
+async def fpmpDiscord(ctx: Context) -> None:
     await ctx.send(
         "Firepup's master playlist\nhttps://open.spotify.com/playlist/4ctNy3O0rOwhhXIKyLvUZM"
     )
 
 
-async def fplq_discord(ctx: Context) -> None:
+async def fplqDiscord(ctx: Context) -> None:
     await ctx.send(
         "Firepup's listen queue\nhttps://open.spotify.com/playlist/20PLdgeBNrCC63Bufg50eK"
     )
 
 
-async def fpo_discord(ctx: Context) -> None:
+async def fpoDiscord(ctx: Context) -> None:
     await ctx.send(
         "Firepup's obsessions playlist\nhttps://open.spotify.com/playlist/5kdR1GsT0gG6ISvskpHyMS"
     )
 
 
-async def version_discord(ctx: Context) -> None:
+async def versionDiscord(ctx: Context) -> None:
     await ctx.send("Version: " + ctx.bot.__version__ + " (Discord)")
 
 
-async def botlist_discord(ctx: Context) -> None:
+async def botlistDiscord(ctx: Context) -> None:
     await ctx.send(
         f"Hi! I'm FireBot (<https://git.h.hackclub.app/Firepup650/FireBot>)! My admins on discord are {str(ctx.bot.owner_ids)}."
     )
 
 
-async def bugs_discord(ctx: Context) -> None:
+async def bugsDiscord(ctx: Context) -> None:
     await ctx.send(
         f"_realizes <@{ctx.author.id}> looks like a bug and squashes <@{ctx.author.id}>_"
     )
 
 
-async def hi_discord(ctx: Context) -> None:
+async def hiDiscord(ctx: Context) -> None:
     await ctx.send(f"Hello <@{ctx.author.id}>!")
 
 
-async def ping_discord(ctx: Context) -> None:
+async def pingDiscord(ctx: Context) -> None:
     await ctx.send(
         f"<@{ctx.author.id}>: pong ({round(ctx.bot.latency * 1000)}ms server latency)"
     )
 
 
-async def uptime_discord(ctx: Context) -> None:
+async def uptimeDiscord(ctx: Context) -> None:
     uptime = run(["uptime", "-p"], stdout=PIPE, check=False).stdout.decode().strip()
     await ctx.send(f"Uptime: {uptime}")
 
 
-async def help_discord(ctx: Context, *, category: str = None) -> None:
+async def helpDiscord(ctx: Context, *, category: str = None) -> None:
     # pylint: disable=unreachable
     await ctx.send("Command list needs rework")
     return
@@ -84,7 +85,7 @@ async def help_discord(ctx: Context, *, category: str = None) -> None:
             await ctx.send("Unknown commands category.")
 
 
-async def quote_discord(ctx: Context, *, regex: str = "") -> None:
+async def quoteDiscord(ctx: Context, *, regex: str = "") -> None:
     qfilter = regex.replace(
         " ", r"\s"
     )  # pyright: ignore [reportInvalidStringEscapeSequence]
@@ -112,7 +113,7 @@ async def quote_discord(ctx: Context, *, regex: str = "") -> None:
             await ctx.send(sel.encode(), ephemeral=True)
 
 
-async def eball_discord(ctx: Context, *, question: str = "") -> None:
+async def eballDiscord(ctx: Context, *, question: str = "") -> None:
     if question.endswith("?"):
         with open("eightball.txt", "r", encoding="utf-8") as eb:
             q = eb.readlines()
@@ -122,18 +123,18 @@ async def eball_discord(ctx: Context, *, question: str = "") -> None:
         await ctx.send("Please pose a Yes or No question.")
 
 
-async def debug_discord(ctx: Context) -> None:
-    dbg_out = {
+async def debugDiscord(ctx: Context) -> None:
+    debugOutput = {
         "VERSION": ctx.bot.__version__ + " (Discord)",
         "NICKLEN": "N/A on discord",
         "NICK": ctx.guild.me.nick if ctx.guild.me.nick else ctx.guild.me.name,
         "ADMINS": ctx.bot.owner_ids,
         "CHANNELS": "N/A on discord",
     }
-    await ctx.send(f"[DEBUG] {dbg_out}")
+    await ctx.send(f"[DEBUG] {debugOutput}")
 
 
-async def debugInternal_discord(ctx: Context, thing: str = "") -> None:
+async def debugInternalDiscord(ctx: Context, thing: str = "") -> None:
     things = dir(ctx.bot)
     if thing == "":
         await ctx.send("You can't just ask me to lookup nothing.")
@@ -144,7 +145,7 @@ async def debugInternal_discord(ctx: Context, thing: str = "") -> None:
         await ctx.send(f'I have nothing called "{thing}"')
 
 
-async def debugEval_discord(ctx: Context, *, code: str = "") -> None:
+async def debugEvalDiscord(ctx: Context, *, code: str = "") -> None:
     # pylint: disable=broad-exception-caught,eval-used
     try:
         out = (
@@ -159,11 +160,12 @@ async def debugEval_discord(ctx: Context, *, code: str = "") -> None:
             chunk = out[:2000]
             out = out[2000:]
             await ctx.send(chunk, allowed_mentions=discord.AllowedMentions.none())
-    except Exception as E:
-        await ctx.send(f"Exception: {E}")
+    except Exception:
+        exception = format_exc()
+        await ctx.send(f"Exception:\n{exception}")
 
 
-async def debugEvalRaw_discord(ctx: Context, *, code: str = "") -> None:
+async def debugEvalRawDiscord(ctx: Context, *, code: str = "") -> None:
     # pylint: disable=broad-exception-caught,eval-used
     try:
         out = str(eval(code))
@@ -173,16 +175,17 @@ async def debugEvalRaw_discord(ctx: Context, *, code: str = "") -> None:
             chunk = out[:2000]
             out = out[2000:]
             await ctx.send(chunk, allowed_mentions=discord.AllowedMentions.none())
-    except Exception as E:
-        await ctx.send(f"Exception: {E}")
+    except Exception:
+        exception = format_exc()
+        await ctx.send(f"Exception:\n{exception}")
 
 
-async def reboot_discord(ctx: Context) -> None:
+async def rebootDiscord(ctx: Context) -> None:
     await ctx.send("Rebooting")
     exit("Reboot")
 
 
-async def fmpull_discord(ctx: Context, user: str = "Firepup650") -> None:
+async def fmpullDiscord(ctx: Context, user: str = "Firepup650") -> None:
     # pylint: disable=broad-exception-caught,fixme
     song = None
     try:
@@ -205,13 +208,13 @@ async def fmpull_discord(ctx: Context, user: str = "Firepup650") -> None:
         await ctx.send(f"{user} currently has their music stopped")
 
 
-async def whoami_discord(ctx: Context) -> None:
+async def whoamiDiscord(ctx: Context) -> None:
     await ctx.send(
         f"I think you are {ctx.author.nick if ctx.author.nick else ctx.author.name} (discord)",
     )
 
 
-async def markov_discord(ctx: Context, word: str = None) -> None:
+async def markovDiscord(ctx: Context, word: str = None) -> None:
     if word is not None and " " in word:
         word = word.split()[0]
     proposed = ctx.bot.markov.generate_text(word)
@@ -227,7 +230,7 @@ async def markov_discord(ctx: Context, word: str = None) -> None:
     )
 
 
-async def slap_discord(ctx: Context, *, target: str = "") -> None:
+async def slapDiscord(ctx: Context, *, target: str = "") -> None:
     name = f"<@{ctx.author.id}>"
     nick = ctx.guild.me.nick if ctx.guild.me.nick else ctx.guild.me.name
     ping = f"<@{ctx.guild.me.id}>"
@@ -249,7 +252,7 @@ async def slap_discord(ctx: Context, *, target: str = "") -> None:
 # Discord-only commands
 
 
-async def error_tester(ctx: Context) -> None:
+async def errorTester(ctx: Context) -> None:
     # pylint: disable=broad-exception-raised
     raise Exception("Intentional Error, for testing")
 
@@ -264,35 +267,35 @@ async def reinit(ctx: Context) -> None:
     await ctx.send("Re-initalized guild config")
 
 
-async def drop_database(ctx: Context, i_am_sure=None) -> None:
-    if i_am_sure:
+async def dropDatabase(ctx: Context, iAmSure=None) -> None:
+    if iAmSure:
         await ctx.bot.database.deleteAll()
         await ctx.send("Dropped the database!")
     else:
         await ctx.send("No.")
 
 
-valid_settings = [
+VALID_SETTINGS = [
     "welcome_channel",
     "on_user_join_role",
     "on_bot_join_role",
     "leave_channel",
 ]
-valid_settings_str = ", ".join(valid_settings)
+VALID_SETTINGS_STRING = ", ".join(VALID_SETTINGS)
 
 
-async def set_setting(ctx: Context, setting: str = None, value: str = None) -> None:
+async def setSetting(ctx: Context, setting: str = None, value: str = None) -> None:
     if setting is None:
-        await ctx.send(f"Valid settings are: `{valid_settings_str}`")
+        await ctx.send(f"Valid settings are: `{VALID_SETTINGS_STRING}`")
         return
-    if setting not in valid_settings:
+    if setting not in VALID_SETTINGS:
         await ctx.send(
-            f"`{setting}` is not a valid setting. Valid settings are: `{valid_settings_str}`"
+            f"`{setting}` is not a valid setting. Valid settings are: `{VALID_SETTINGS_STRING}`"
         )
         return
     data = await ctx.bot.database.get(ctx.guild.id)
-    old_value = data.get(setting)
-    value_str = f"`{value}`"
+    oldValue = data.get(setting)
+    valueString = f"`{value}`"
     if value is not None:
         if setting.endswith("_channel"):
             value = value[2:-1]
@@ -303,7 +306,7 @@ async def set_setting(ctx: Context, setting: str = None, value: str = None) -> N
             if not isinstance(val, discord.TextChannel):
                 await ctx.send(f"`{setting}` must be a text channel.")
                 return
-            value_str = val.mention
+            valueString = val.mention
         elif setting.endswith("_role"):
             value = value[3:-1]
             if not value.isdigit():
@@ -313,62 +316,62 @@ async def set_setting(ctx: Context, setting: str = None, value: str = None) -> N
             if not isinstance(val, discord.Role):
                 await ctx.send(f"`{setting}` must be a role.")
                 return
-            value_str = val.mention
-    if old_value == value:
+            valueString = val.mention
+    if oldValue == value:
         await ctx.send(f"`{setting}` unchanged")
-    elif not old_value:
+    elif not oldValue:
         await ctx.send(
-            f"Set `{setting}` to {value_str}",
+            f"Set `{setting}` to {valueString}",
             allowed_mentions=discord.AllowedMentions.none(),
         )
     elif not value:
         await ctx.send(f"`{setting}` has been unset")
     else:
         await ctx.send(
-            f"Changed `{setting}` to {value_str}",
+            f"Changed `{setting}` to {valueString}",
             allowed_mentions=discord.AllowedMentions.none(),
         )
     data[setting] = value
     await ctx.bot.database.set(ctx.guild.id, data)
 
 
-async def get_setting(ctx: Context, setting: str = None) -> None:
+async def getSetting(ctx: Context, setting: str = None) -> None:
     if setting is None:
         data = await ctx.bot.database.get(ctx.guild.id)
         resp = "Settings in this guild:"
-        for setting_name in valid_settings:
-            value = data.get(setting_name)
+        for settingName in VALID_SETTINGS:
+            value = data.get(settingName)
             if value is None:
                 value = "<Not set>"
-            elif setting_name.endswith("_channel"):
+            elif settingName.endswith("_channel"):
                 val = ctx.guild.get_channel(int(value))
                 value = val.mention
-            elif setting_name.endswith("_role"):
+            elif settingName.endswith("_role"):
                 val = ctx.guild.get_role(int(value))
                 value = val.mention
-            resp = resp + f"\n\\- {setting_name} = {value}"
+            resp = resp + f"\n\\- {settingName} = {value}"
         await ctx.send(resp, allowed_mentions=discord.AllowedMentions.none())
         return
-    if setting not in valid_settings:
+    if setting not in VALID_SETTINGS:
         await ctx.send(
-            f"`{setting}` is not a valid setting. Valid settings are: `{valid_settings_str}`"
+            f"`{setting}` is not a valid setting. Valid settings are: `{VALID_SETTINGS_STRING}`"
         )
         return
     data = await ctx.bot.database.get(ctx.guild.id)
     value = data.get(setting)
-    value_str = value
+    valueString = value
     if value is not None:
         if setting.endswith("_channel"):
             val = ctx.guild.get_channel(int(value))
-            value_str = val.mention
+            valueString = val.mention
         elif setting.endswith("_role"):
             val = ctx.guild.get_role(int(value))
-            value_str = val.mention
+            valueString = val.mention
     if not value:
         await ctx.send(f"`{setting}` is not set for this guild")
     else:
         await ctx.send(
-            f"`{setting}` is set to {value_str} in this guild",
+            f"`{setting}` is set to {valueString} in this guild",
             allowed_mentions=discord.AllowedMentions.none(),
         )
 
@@ -377,7 +380,7 @@ async def get_setting(ctx: Context, setting: str = None) -> None:
 
 
 # Metadata dict
-data_discord: dict[str, dict[str, Any]] = {
+dataDiscord: dict[str, dict[str, Any]] = {
     "botlist": {
         "owner": False,
         "server_owner": False,
@@ -554,7 +557,7 @@ data_discord: dict[str, dict[str, Any]] = {
             "target": "What/Whom I should slap with one of the things I keep in storage"
         },
     },
-    "error_tester": {
+    "errorTester": {
         "owner": True,
         "server_owner": False,
         "server_admin": False,
@@ -578,7 +581,7 @@ data_discord: dict[str, dict[str, Any]] = {
         "desc": "Onwers only - Reset all settings for the guild this is run in",
         "params": {},
     },
-    "drop_database": {
+    "dropDatabase": {
         "owner": True,
         "server_owner": False,
         "server_admin": False,
@@ -604,31 +607,31 @@ data_discord: dict[str, dict[str, Any]] = {
     },
 }
 # Call dict
-call_discord: dict[str, Callable[Any, None]] = {
-    "botlist": botlist_discord,
-    "bugs": bugs_discord,
-    "hi": hi_discord,
-    "restart": reboot_discord,
-    "uptime": uptime_discord,
-    "debug": debug_discord,
-    "debuginternal": debugInternal_discord,
-    "debugeval": debugEval_discord,
-    "debugevalraw": debugEvalRaw_discord,
-    "8ball": eball_discord,
-    "quote": quote_discord,
-    "help": help_discord,
-    "ping": ping_discord,
-    "whoami": whoami_discord,
-    "fpmp": fpmp_discord,
-    "fplq": fplq_discord,
-    "version": version_discord,
-    "np": fmpull_discord,
-    "markov": markov_discord,
-    "slap": slap_discord,
-    "error_tester": error_tester,
+callDiscord: dict[str, Callable[Any, None]] = {
+    "botlist": botlistDiscord,
+    "bugs": bugsDiscord,
+    "hi": hiDiscord,
+    "restart": rebootDiscord,
+    "uptime": uptimeDiscord,
+    "debug": debugDiscord,
+    "debuginternal": debugInternalDiscord,
+    "debugeval": debugEvalDiscord,
+    "debugevalraw": debugEvalRawDiscord,
+    "8ball": eballDiscord,
+    "quote": quoteDiscord,
+    "help": helpDiscord,
+    "ping": pingDiscord,
+    "whoami": whoamiDiscord,
+    "fpmp": fpmpDiscord,
+    "fplq": fplqDiscord,
+    "version": versionDiscord,
+    "np": fmpullDiscord,
+    "markov": markovDiscord,
+    "slap": slapDiscord,
+    "errorTester": errorTester,
     "ready": ready,
     "reinit": reinit,
-    "drop_database": drop_database,
-    "set": set_setting,
-    "get": get_setting,
+    "dropDatabase": dropDatabase,
+    "set": setSetting,
+    "get": getSetting,
 }
