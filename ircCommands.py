@@ -35,7 +35,7 @@ def goat(bot: bare.Bot, chan: str, name: str, message: str) -> None:
 
 def botlist(bot: bare.Bot, chan: str, name: str, message: str) -> None:
     bot.msg(
-        f"Hi! I'm FireBot (https://git.h.hackclub.app/Firepup650/FireBot)! {'My admins on this server are' + str(bot.adminnames) + '.' if bot.adminnames else ''}",  # pyright: ignore [reportOperatorIssue]
+        f"Hi! I'm FireBot (https://git.firepup650.com/firepup650/firebot)! {'My admins on this server are' + str(bot.adminnames) + '.' if bot.adminnames else ''}",  # pyright: ignore [reportOperatorIssue]
         chan,
     )
 

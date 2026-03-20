@@ -39,7 +39,7 @@ async def versionDiscord(ctx: Context) -> None:
 
 async def botlistDiscord(ctx: Context) -> None:
     await ctx.send(
-        f"Hi! I'm FireBot (<https://git.h.hackclub.app/Firepup650/FireBot>)! My admins on discord are {str(ctx.bot.owner_ids)}."
+        f"Hi! I'm FireBot (<https://git.firepup650.com/firepup650/firebot>)! My admins on discord are {str(ctx.bot.owner_ids)}."
     )
 
 
