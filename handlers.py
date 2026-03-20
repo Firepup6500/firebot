@@ -8,7 +8,7 @@ from utils import lazyDecode
 import config as conf, commands as cmds, utils
 
 
-def CTCP(bot: bare.Bot, msg: str) -> bool:
+def ctcp(bot: bare.Bot, msg: str) -> bool:
     sender = msg.split("!", 1)[0][1:]
     kind = msg.split("\x01")[1].split(" ", 1)[0]
     bot.log(f'Responding to CTCP "{kind}" from {sender}')
@@ -41,7 +41,7 @@ def CTCP(bot: bare.Bot, msg: str) -> bool:
     return False
 
 
-def PRIVMSG(bot: bare.Bot, msg: str) -> Union[tuple[None, None], tuple[str, str]]:
+def privmsgHandler(bot: bare.Bot, msg: str) -> Union[tuple[None, None], tuple[str, str]]:
     # pylint: disable=too-many-locals,too-many-boolean-expressions
     # Format of ":[Nick]![ident]@[host|vhost] PRIVMSG [channel] :[message]”
     name = msg.split("!", 1)[0][1:]
@@ -51,7 +51,7 @@ def PRIVMSG(bot: bare.Bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
     bot.current = "user"
     if (
         (name.startswith("saxjax") and bot.server == "efnet")
-        or (name in ["ReplIRC", "sshchat"] and bot.server == "replirc")
+        or (name in ["ReplIRC", "sshchat"] and bot.server == "fireirc")
         or (
             name in ["FirePyLink_", "FirePyLink"]
             and bot.server in ["ircnow", "backupbox"]
@@ -60,13 +60,13 @@ def PRIVMSG(bot: bare.Bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
         if "<" in msg and ">" in msg:
             bridge = True
             bot.current = "bridge"
-            Nname = msg.split("<", 1)[1].split(">", 1)[0].strip()
+            bridgedName = msg.split("<", 1)[1].split(">", 1)[0].strip()
             if name == "ReplIRC":
-                name = Nname[4:]
+                name = bridgedName[4:]
             elif name in ["FirePyLink_", "FirePyLink"]:
-                name = Nname.lstrip("@%~+")[3:-1]
+                name = bridgedName.lstrip("@%~+")[3:-1]
             else:
-                name = Nname
+                name = bridgedName
             message = msg.split(">", 1)[1].strip()
         else:
             message = msg.split("PRIVMSG", 1)[1].split(":", 1)[1].strip()
@@ -114,8 +114,8 @@ def PRIVMSG(bot: bare.Bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
                     try:
                         cmds.call[cmd](bot, chan, name, message)
                     except Exception:
-                        Err = format_exc()
-                        for line in Err.split("\n"):
+                        exception = format_exc()
+                        for line in exception.split("\n"):
                             bot.log(line, "ERROR")
                         bot.msg(
                             "Sorry, I had an error trying to execute that command. Please check error logs.",
@@ -125,8 +125,8 @@ def PRIVMSG(bot: bare.Bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
                 try:
                     cmds.call[cmd](bot, chan, name, message)
                 except Exception:
-                    Err = format_exc()
-                    for line in Err.split("\n"):
+                    exception = format_exc()
+                    for line in exception.split("\n"):
                         bot.log(line, "ERROR")
                     bot.msg(
                         "Sorry, I had an error trying to execute that command. Please check error logs.",
@@ -148,7 +148,7 @@ def PRIVMSG(bot: bare.Bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
             return "reload", chan
         handled = True
     if not handled and len(message.split("\x01")) == 3:
-        if not CTCP(bot, message):
+        if not ctcp(bot, message):
             kind = message.split("\x01")[1]
             if kind.startswith("ACTION ducks") and len(kind.split(" ", 2)) == 3:
                 bot.msg(
@@ -172,14 +172,14 @@ def PRIVMSG(bot: bare.Bot, msg: str) -> Union[tuple[None, None], tuple[str, str]
     return None, None
 
 
-def NICK(bot: bare.Bot, msg: str) -> tuple[None, None]:
+def nickHandler(bot: bare.Bot, msg: str) -> tuple[None, None]:
     name = msg.split("!", 1)[0][1:]
     if name == bot.nick:
         bot.nick = msg.split("NICK", 1)[1].split(":", 1)[1].strip()
     return None, None
 
 
-def KICK(bot: bare.Bot, msg: str) -> tuple[None, None]:
+def kickHandler(bot: bare.Bot, msg: str) -> tuple[None, None]:
     important = msg.split("KICK", 1)[1].split(":", 1)[0].strip().split(" ")
     channel = important[0]
     kicked = important[1]
@@ -188,7 +188,7 @@ def KICK(bot: bare.Bot, msg: str) -> tuple[None, None]:
     return None, None
 
 
-def PART(bot: bare.Bot, msg: str) -> tuple[None, None]:
+def partHandler(bot: bare.Bot, msg: str) -> tuple[None, None]:
     parted = msg.split("!", 1)[0][1:]
     channel = msg.split("PART", 1)[1].split(":", 1)[0].strip()
     if parted == bot.nick:
@@ -196,7 +196,7 @@ def PART(bot: bare.Bot, msg: str) -> tuple[None, None]:
     return None, None
 
 
-def QUIT(bot: bare.Bot, msg: str) -> tuple[None, None]:
+def quitHandler(bot: bare.Bot, msg: str) -> tuple[None, None]:
     if bot.server == "replirc":
         quitter = msg.split("!", 1)[0][1:]
         if quitter == "FireMCbot":
@@ -204,7 +204,7 @@ def QUIT(bot: bare.Bot, msg: str) -> tuple[None, None]:
     return None, None
 
 
-def JOIN(bot: bare.Bot, msg: str) -> tuple[None, None]:
+def joinHandler(bot: bare.Bot, msg: str) -> tuple[None, None]:
     nick = msg.split("!", 1)[0][1:]
     hostname = msg.split("@", 1)[1].split(" ", 1)[0].strip()
     chan = msg.split("#")[-1].strip()
@@ -212,7 +212,7 @@ def JOIN(bot: bare.Bot, msg: str) -> tuple[None, None]:
     return None, None
 
 
-def MODE(bot: bare.Bot, msg: str) -> tuple[None, None]:
+def modeHandler(bot: bare.Bot, msg: str) -> tuple[None, None]:
     try:
         chan = msg.split("#", 1)[1].split(" ", 1)[0]
         add = msg.split("#", 1)[1].split(" ", 2)[1][0] == "+"
@@ -235,21 +235,21 @@ def MODE(bot: bare.Bot, msg: str) -> tuple[None, None]:
     return None, None
 
 
-def NULL(bot: bare.Bot, msg: str) -> tuple[None, None]:
+def nullHandler(bot: bare.Bot, msg: str) -> tuple[None, None]:
     return None, None
 
 
 handles: dict[
     str, Callable[[bare.Bot, str], Union[tuple[None, None], tuple[str, str]]]
 ] = {
-    "PRIVMSG": PRIVMSG,
-    "NICK": NICK,
-    "KICK": KICK,
-    "PART": PART,
-    "MODE": MODE,
-    "TOPIC": NULL,
-    "QUIT": QUIT,
-    "JOIN": JOIN,
-    "NOTICE": NULL,
-    "INVITE": NULL,
+    "PRIVMSG": privmsgHandler,
+    "NICK": nickHandler,
+    "KICK": kickHandler,
+    "PART": partHandler,
+    "MODE": modeHandler,
+    "TOPIC": nullHandler,
+    "QUIT": quitHandler,
+    "JOIN": joinHandler,
+    "NOTICE": nullHandler,
+    "INVITE": nullHandler,
 }
