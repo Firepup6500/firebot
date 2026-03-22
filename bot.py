@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # pylint: disable=missing-module-docstring,missing-class-docstring,too-many-instance-attributes,broad-exception-caught,redefined-builtin
-from socket import socket, AF_INET, SOCK_STREAM, SHUT_RDWR
+from socket import socket, AF_INET, AF_INET6, SOCK_STREAM, SHUT_RDWR
 from sys import exit
 from typing import NoReturn, Union
 from time import sleep
@@ -50,10 +50,18 @@ class Bot(bare.Bot):
         self.queue: list[bytes] = []
         self.statuses = {"firepup": {}}
         self.ops = {}
-        self.sock = socket(AF_INET, SOCK_STREAM)
+        inetFamily = (
+            AF_INET6
+            if "v6" in conf.servers[server] and conf.servers[server]["v6"]
+            else AF_INET
+        )
+        self.sock = socket(inetFamily, SOCK_STREAM)
         self.current = "user"
         self.threads = (
             conf.servers[server]["threads"] if "threads" in conf.servers[server] else []
+        )
+        self.radioData = (
+            conf.servers[server]["radioData"] if "radioData" in conf.servers[server] else {}
         )
         self.onIdntCmds = (
             conf.servers[server]["onIdntCmds"]
@@ -141,7 +149,7 @@ class Bot(bare.Bot):
 
     def join(self, chan: str, origin: str, lock: bool = True) -> None:
         self.log(f"Joining {chan}...")
-        chan = chan.replace(" ", "")
+        chan = chan.replace(" ", "").lower()
         if "," in chan:
             chans = chan.split(",")
             for subchan in chans:
@@ -162,8 +170,10 @@ class Bot(bare.Bot):
             ircmsg = utils.safeDecode(self.recv())
             if ircmsg != "":
                 code = 0
+                joinedChan = ""
                 try:
                     code = int(ircmsg.split(" ", 2)[1].strip())
+                    joinedChan = ircmsg.split(" ", 4)[3].strip().lower()
                 except (IndexError, ValueError):
                     pass
                 print(utils.lazyDecode(ircmsg))
@@ -173,22 +183,22 @@ class Bot(bare.Bot):
                     self.exit("Lost connection to the server while joining a channel")
                 elif len(ircmsg.split("\x01")) == 3:
                     handlers.ctcp(self, ircmsg)
-                elif code == 403:
+                elif code == 403 and chan == joinedChan:
                     self.log(f"Joining {chan} failed", "WARN")
                     if origin != "null":
                         self.msg(f"{chan} is an invalid channel", origin)
                     break
-                elif code == 473:
+                elif code == 473 and chan == joinedChan:
                     self.log(f"Joining {chan} failed (+i)", "WARN")
                     if origin != "null":
                         self.msg(f"{chan} is +i, and I'm not invited.", origin)
                     break
-                elif code == 474:
+                elif code == 474 and chan == joinedChan:
                     self.log(f"Joining {chan} failed (+b)", "WARN")
                     if origin != "null":
                         self.msg(f"I'm banned from {chan}.", origin)
                     break
-                elif code == 475:
+                elif code == 475 and chan == joinedChan:
                     self.log(f"Joining {chan} failed (+k without/with bad key)")
                     if origin != "null":
                         self.msg(
@@ -196,39 +206,46 @@ class Bot(bare.Bot):
                             origin,
                         )
                     break
-                elif code == 480:
+                elif code == 480 and chan == joinedChan:
                     self.log(f"Joining {chan} failed (+S)", "WARN")
                     if origin != "null":
                         self.msg(
                             f"{chan} is +S, and I'm not connected over SSL.", origin
                         )
                     break
-                elif code == 519:
+                elif code == 519 and chan == joinedChan:
                     self.log(f"Joining {chan} failed (+A)", "WARN")
                     if origin != "null":
                         self.msg(f"{chan} is +A, and I'm not an admin.", origin)
                     break
-                elif code == 520:
+                elif code == 520 and chan == joinedChan:
                     self.log(f"Joining {chan} failed (+O)", "WARN")
                     if origin != "null":
                         self.msg(f"{chan} is +O, and I'm not an operator.", origin)
                     break
-                elif code == 405:
+                elif code == 405 and chan == joinedChan:
                     self.log(f"Joining {chan} failed (too many channels)", "WARN")
                     if origin != "null":
                         self.msg(f"I'm in too many channels to join {chan}", origin)
                     break
-                elif code == 471:
+                elif code == 471 and chan == joinedChan:
                     self.log(f"Joining {chan} failed (+l)", "WARN")
                     if origin != "null":
                         self.msg(f"{chan} is +l, and is full", origin)
                     break
                 elif code == 366:
-                    self.log(f"Joining {chan} succeeded")
-                    if origin != "null":
-                        self.msg(f"Joined {chan}", origin)
-                    self.channels[chan] = 0
-                    break
+                    if chan == joinedChan:
+                        self.log(f"Joining {chan} succeeded")
+                        if origin != "null":
+                            self.msg(f"Joined {chan}", origin)
+                        self.channels[chan] = 0
+                        break
+                    else:
+                        self.log(f"Unpexpectedly joined {joinedChan}")
+                        if origin != "null":
+                            self.msg(f"Joined {joinedChan} (?????)", origin)
+                        self.channels[joinedChan] = 0
+
 
     def ping(self, ircmsg: str) -> int:
         pong = f"PONG :{ircmsg.split('PING :')[1]}\n"
@@ -236,7 +253,7 @@ class Bot(bare.Bot):
         return self.send(pong)
 
     def send(self, command: str) -> int:
-        return self.sock.send(bytes(command))
+        return self.sock.send(command.encode())
 
     def recv(self) -> bytes:
         if self.queue:
@@ -302,7 +319,7 @@ class Bot(bare.Bot):
         if self.onIdntCmds:
             for cmd in self.onIdntCmds:
                 self.send(cmd + "\n")
-        for chan in self.channels:
+        for chan in list(self.channels):
             self.join(chan, "null", False)
         if self.onJoinCmds:
             for cmd in self.onJoinCmds:

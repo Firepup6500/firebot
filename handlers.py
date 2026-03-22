@@ -208,6 +208,9 @@ def quitHandler(bot: bare.Bot, msg: str) -> tuple[None, None]:
 
 def joinHandler(bot: bare.Bot, msg: str) -> tuple[None, None]:
     nick = msg.split("!", 1)[0][1:]
+    if nick == bot.nick:
+        bot.log("Refusing to run a dnsbl check on myself!")
+        return None, None
     hostname = msg.split("@", 1)[1].split(" ", 1)[0].strip()
     chan = msg.split("#")[-1].strip()
     utils.dnsblHandler(bot, nick, hostname, chan)
@@ -237,6 +240,16 @@ def modeHandler(bot: bare.Bot, msg: str) -> tuple[None, None]:
     return None, None
 
 
+def forceJoinHandler(bot: bare.Bot, msg: str) -> tuple[None, None]:
+    try:
+        chan = msg.split(" ", 4)[3].strip().lower()
+        bot.log(f"Unpexpectedly joined {chan}")
+        bot.channels[chan] = 0
+    except IndexError:
+        pass
+    return None, None
+
+
 def nullHandler(bot: bare.Bot, msg: str) -> tuple[None, None]:
     return None, None
 
@@ -254,4 +267,5 @@ handles: dict[
     "JOIN": joinHandler,
     "NOTICE": nullHandler,
     "INVITE": nullHandler,
+    "366": forceJoinHandler,
 }

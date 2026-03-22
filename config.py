@@ -37,7 +37,7 @@ hsbl = DNSBLDomainChecker(providers=providers)
 hardbl: list[str] = ["146.70.59.36"]
 
 load_dotenv()
-__version__ = "v3.0.26"
+__version__ = "v3.0.27"
 NOWPLAYING_REGEX: str = (
     "\\[\x0303last\\.fm\x03\\] [A-Za-z0-9_[\\]{}\\|\\-^]{1,$MAX} (is listening|last listened) to: \x02.+ - .*\x02( \\([0-9]+ plays\\)( \\[.*\\])?)?"
 )
@@ -57,12 +57,24 @@ servers: dict[str, dict[str, Any]] = {
         "channels": {"#random": 0, "#dice": 0},
         "threads": ["pingMon"],
         "dnsblMode": "kickban",
+        "hosts": []
+    },
+    "hollyhock": {
+        "address": "irc.hollyhock.internal",
+        "channels": {"#random": 0, "#main": 0, "#radio": 0},
+        "ignores": ["#radio"],
+        "threads": ["radio"],
+        "radioData": {"channel": "#radio", "topic": False, "debug": False},
+        "v6": True,
+        "autoMethod": "MARKOV",
+        "hosts": [],
     },
     "libera": {
         "address": "irc.libera.chat",
         "pass": env["libera_pass"],
         "channels": {"#random": 0, "#dice": 0},
         "dnsblMode": "kickban",
+        "hosts": [],
     },
     "fireirc": {
         "address": "127.0.0.1",
@@ -82,6 +94,7 @@ servers: dict[str, dict[str, Any]] = {
         "ignores": ["#fp-radio"],
         "hosts": ["owner.irc.firepup650.com"],
         "threads": ["radio"],
+        "radioData": {"channel": "#fp-radio", "topic": True, "debug": False},
         "autoMethod": "MARKOV",
         "dnsblMode": "akill",
     },
@@ -92,6 +105,7 @@ servers: dict[str, dict[str, Any]] = {
         "ignores": ["#main/replirc"],
         "onIdntCmds": ["OPER e e"],
         "dnsbl-mode": "gline",
+        "hosts": [],
     },
     "twitch": {
         "nick": "fireschatbot",
@@ -102,10 +116,11 @@ servers: dict[str, dict[str, Any]] = {
         },
         "admins": ["firepup650"],
         "prefix": "!",
+        "hosts": [],
     },
 }
 GLOBAL_ADMIN_HOSTS: list[str] = ["firepup.firepi", "69.8.95.218"]
-noAdmins = ["ircnow", "backupbox"]
+noAdmins = ["ircnow", "backupbox", "hollyhock"]
 ESCAPE_SEQUENCE_RE = re.compile(
     r"""
     ( \\U........      # 8-digit hex escapes

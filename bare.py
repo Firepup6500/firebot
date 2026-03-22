@@ -44,6 +44,7 @@ class Bot:
     statuses: dict[str, dict[str, str]]
     ops: dict[str, bool]
     dns: dict[str, dict[str, Union[str, list[str]]]]
+    radioData: dict[str, Union[str, bool]]
 
     def __init__(self, server: str): ...
 

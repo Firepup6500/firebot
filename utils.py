@@ -141,8 +141,10 @@ def dnsblHandler(
     return dnsblStatus, dnsblResps
 
 
-def lazyDecode(data: bytes) -> str:
-    'Lazily "decode" the provided bytes object using string manipulation'
+def lazyDecode(data: Union[bytes, str]) -> str:
+    'Lazily "decode" the provided bytes object using string manipulation (if given a string, cast it to bytes first)'
+    if isinstance(data, str):
+        return str(data.encode())[2:-1]
     return str(data)[2:-1]
 
 

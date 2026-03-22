@@ -267,8 +267,8 @@ async def reinit(ctx: Context) -> None:
     await ctx.send("Re-initalized guild config")
 
 
-async def dropDatabase(ctx: Context, iAmSure=None) -> None:
-    if iAmSure:
+async def dropDatabase(ctx: Context, iamsure=None) -> None:
+    if iamsure:
         await ctx.bot.database.deleteAll()
         await ctx.send("Dropped the database!")
     else:
@@ -557,7 +557,7 @@ dataDiscord: dict[str, dict[str, Any]] = {
             "target": "What/Whom I should slap with one of the things I keep in storage"
         },
     },
-    "errorTester": {
+    "errortester": {
         "owner": True,
         "server_owner": False,
         "server_admin": False,
@@ -581,13 +581,13 @@ dataDiscord: dict[str, dict[str, Any]] = {
         "desc": "Onwers only - Reset all settings for the guild this is run in",
         "params": {},
     },
-    "dropDatabase": {
+    "dropdatabase": {
         "owner": True,
         "server_owner": False,
         "server_admin": False,
         "aliases": [],
         "desc": "Onwers only - !! DANGER !! Drop ALL settings for all guilds!",
-        "params": {"i_am_sure": "Are you SURE you want to drop it?"},
+        "params": {"iamsure": "Are you SURE you want to drop it?"},
     },
     "set": {
         "owner": False,
@@ -628,10 +628,10 @@ callDiscord: dict[str, Callable[Any, None]] = {
     "np": fmpullDiscord,
     "markov": markovDiscord,
     "slap": slapDiscord,
-    "errorTester": errorTester,
+    "errortester": errorTester,
     "ready": ready,
     "reinit": reinit,
-    "dropDatabase": dropDatabase,
+    "dropdatabase": dropDatabase,
     "set": setSetting,
     "get": getSetting,
 }

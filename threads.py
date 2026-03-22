@@ -5,6 +5,7 @@ from typing import Any, NoReturn
 from threading import Thread
 from time import sleep
 from traceback import format_exc
+from pylast import WSError
 import bare
 from logs import log
 
@@ -83,7 +84,9 @@ def radio(instance: bare.Bot) -> NoReturn:
     missChunk = 0
     missCap = -5
     perChunk = 10
-    debug = False  # instance.server == "replirc"
+    channel = instance.radioData["channel"]
+    topic = instance.radioData["topic"]
+    debug = instance.radioData["debug"]
     while 1:
         try:
             newTrack = instance.lastfmLink.get_user("Firepup650").get_now_playing()
@@ -100,10 +103,11 @@ def radio(instance: bare.Bot) -> NoReturn:
                 thisTrack = str(newTrack)
                 if thisTrack != lastTrack:
                     lastTrack = thisTrack
-                    instance.msg("f.sp " + thisTrack, "#fp-radio")
-                    instance.sendraw(
-                        f"TOPIC #fp-radio :Firepup radio ({thisTrack}) - https://open.spotify.com/playlist/4ctNy3O0rOwhhXIKyLvUZM"
-                    )
+                    instance.msg(thisTrack, channel)
+                    if topic:
+                        instance.sendraw(
+                            f"TOPIC {channel} :Firepup radio ({thisTrack}) - https://open.spotify.com/playlist/4ctNy3O0rOwhhXIKyLvUZM"
+                        )
             elif not complained:
                 missChunk = 0
                 if misses < 0:
@@ -122,13 +126,17 @@ def radio(instance: bare.Bot) -> NoReturn:
                     sleep(2)
                     continue
                 instance.msg(
-                    "Firepup seems to have stopped the music by mistake :/", "#fp-radio"
+                    "Firepup's music seems to have stopped :/",
+                    channel,
                 )
-                instance.sendraw(
-                    "TOPIC #fp-radio :Firepup radio (Offline) - https://open.spotify.com/playlist/4ctNy3O0rOwhhXIKyLvUZM"
-                )
+                if topic:
+                    instance.sendraw(
+                        f"TOPIC {channel} :Firepup radio (Offline) - https://open.spotify.com/playlist/4ctNy3O0rOwhhXIKyLvUZM"
+                    )
                 complained = True
                 lastTrack = "null"
+        except WSError as pylastError:
+            instance.log(f"Pylast is fucking stupid: {pylastError}", "WARN")
         except Exception:
             exception = format_exc()
             for line in exception.split("\n"):

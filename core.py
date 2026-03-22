@@ -19,6 +19,7 @@ def launchDiscord() -> Popen:
 servers = {
     "ircnow": {"noWrap": True, "func": launchIrc, "args": ["ircnow"]},
     "libera": {"noWrap": True, "func": launchIrc, "args": ["libera"]},
+    "hollyhock": {"noWrap": True, "func": launchIrc, "args": ["hollyhock"]},
     #    "fireirc": {"noWrap": True, "func": launchIrc, "args": ["fireirc"]},
     #    "efnet": {"noWrap": True, "func": launchIrc, "args": ["efnet"]},
     #    "backupbox": {"noWrap": True, "func": launchIrc, "args": ["backupbox"]},
