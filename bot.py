@@ -240,11 +240,10 @@ class Bot(bare.Bot):
                             self.msg(f"Joined {chan}", origin)
                         self.channels[chan] = 0
                         break
-                    else:
-                        self.log(f"Unpexpectedly joined {joinedChan}")
-                        if origin != "null":
-                            self.msg(f"Joined {joinedChan} (?????)", origin)
-                        self.channels[joinedChan] = 0
+                    self.log(f"Unpexpectedly joined {joinedChan}")
+                    if origin != "null":
+                        self.msg(f"Joined {joinedChan} (?????)", origin)
+                    self.channels[joinedChan] = 0
 
 
     def ping(self, ircmsg: str) -> int:
