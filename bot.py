@@ -8,6 +8,7 @@ from importlib import reload
 import random as r
 from threading import Thread
 from traceback import format_exc
+from signal import signal, SIGUSR1
 import ircCommands as cmds
 import config as conf
 import utils
@@ -102,6 +103,12 @@ class Bot(bare.Bot):
             if "prefix" in conf.servers[server]
             else conf.DEFAULT_PREFIX
         )
+        self.needsReload = False
+
+        def reloadSignalHandler(_sig, _frame):
+            self.needsReload = True
+
+        signal(SIGUSR1, reloadSignalHandler)
         self.log(f"Start init for {self.server}")
 
     def connect(self) -> None:
@@ -349,8 +356,9 @@ class Bot(bare.Bot):
                 self.tmpHost = ""
                 if action in handlers.handles:
                     res, chan = handlers.handles[action](self, ircmsg)
-                    if res == "reload" and isinstance(chan, str):
+                    if res == "reload" or self.needsReload:
                         try:
+                            self.needsReload = False
                             reload(conf)
                             reload(utils)
                             self.adminnames = (
@@ -377,15 +385,21 @@ class Bot(bare.Bot):
                             )
                             reload(cmds)
                             reload(handlers)
-                            self.msg("Reloaded successfully", chan)
+                            if isinstance(chan, str):
+                                self.msg("Reloaded successfully", chan)
+                            else:
+                                self.log("Reloaded successfully from SIGUSR1")
                         except Exception:
                             exception = format_exc()
                             for line in exception.split("\n"):
                                 self.log(line, "ERROR")
-                            self.msg(
-                                "Reload failed, likely partially reloaded. Please check error logs.",
-                                chan,
-                            )
+                            if isinstance(chan, str):
+                                self.msg(
+                                    "Reload failed, likely partially reloaded. Please check error logs.",
+                                    chan,
+                                )
+                            else:
+                                self.log("Reload from SIGUSR1 failes")
                 else:
                     if ircmsg.startswith("PING "):
                         self.ping(ircmsg)
