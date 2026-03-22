@@ -57,7 +57,7 @@ servers: dict[str, dict[str, Any]] = {
         "channels": {"#random": 0, "#dice": 0},
         "threads": ["pingMon"],
         "dnsblMode": "kickban",
-        "hosts": []
+        "hosts": [],
     },
     "hollyhock": {
         "address": "irc.hollyhock.internal",

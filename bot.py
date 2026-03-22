@@ -61,7 +61,9 @@ class Bot(bare.Bot):
             conf.servers[server]["threads"] if "threads" in conf.servers[server] else []
         )
         self.radioData = (
-            conf.servers[server]["radioData"] if "radioData" in conf.servers[server] else {}
+            conf.servers[server]["radioData"]
+            if "radioData" in conf.servers[server]
+            else {}
         )
         self.onIdntCmds = (
             conf.servers[server]["onIdntCmds"]
@@ -244,7 +246,6 @@ class Bot(bare.Bot):
                     if origin != "null":
                         self.msg(f"Joined {joinedChan} (?????)", origin)
                     self.channels[joinedChan] = 0
-
 
     def ping(self, ircmsg: str) -> int:
         pong = f"PONG :{ircmsg.split('PING :')[1]}\n"
